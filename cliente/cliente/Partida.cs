@@ -483,5 +483,10 @@ namespace cliente
         {
             MessageBox.Show("hols");
         }
+
+        private void aza_button_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

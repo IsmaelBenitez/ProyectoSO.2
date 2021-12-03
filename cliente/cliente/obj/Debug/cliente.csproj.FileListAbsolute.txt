@@ -29,3 +29,14 @@ C:\Users\itzia\OneDrive\Escritorio\Uni\3r\1r quatri\SO\Proyecto SO\ProyectoSO\cl
 C:\Users\itzia\OneDrive\Escritorio\Uni\3r\1r quatri\SO\Proyecto SO\ProyectoSO\cliente\cliente\obj\Debug\cliente.exe
 C:\Users\itzia\OneDrive\Escritorio\Uni\3r\1r quatri\SO\Proyecto SO\ProyectoSO\cliente\cliente\obj\Debug\cliente.pdb
 C:\Users\ismae\Documents\GitHub\ProyectoSO\cliente\cliente\obj\Debug\cliente.Partida.resources
+C:\share\ProyectoSO.2\cliente\cliente\bin\Debug\cliente.exe.config
+C:\share\ProyectoSO.2\cliente\cliente\bin\Debug\cliente.exe
+C:\share\ProyectoSO.2\cliente\cliente\bin\Debug\cliente.pdb
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.csprojAssemblyReference.cache
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.Form1.resources
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.Partida.resources
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.Properties.Resources.resources
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.csproj.GenerateResource.cache
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.csproj.CoreCompileInputs.cache
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.exe
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.pdb

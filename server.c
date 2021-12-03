@@ -35,8 +35,7 @@ MYSQL *conn; // Connector con el serivdor de MYSQL
 ListaConectados Lista; // Lista de conectados
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;//Estructura para la implementación de exclusin mutua
 TPartidas tabla;
-int i;
-int sockets[100];
+
 
 //Funciones para actuar sobre la lista de conectados
 int AnadirConectado (ListaConectados *lista, char nombre[60], int socket){
@@ -207,7 +206,7 @@ void EnviarMensaje(int Id,char nombre[20],char mensaje[100]){
 	char notificacion[200];
 	sprintf(notificacion,"9/%d/%s: %s",Id,nombre,mensaje);
 	printf("%s\n",notificacion);
-	i=0;
+	int i=0;
 	while(i<tabla[Id].Jugadores.num){
 		write (tabla[Id].Jugadores.conectados[i].socket,notificacion, strlen(notificacion));
 		i=i+1;
@@ -737,19 +736,20 @@ int main(int argc, char *argv[]){
 	
 	//Estructuras para el uso de threads
 	
-	pthread_t thread[100];
+	
  
-	int i=0;
+
 	// Bucle infinito de atender las peticiones abriendo threads
 	for (;;)
 	{
 		printf("Escuchando\n");
+		pthread_t thread;
 		
 		sock_conn=accept(sock_listen,NULL,NULL);
 		printf("He recibido conexion\n");
-		sockets[i]=sock_conn;
-		pthread_create(&thread[i],NULL,AtenderCliente,&sockets[i]);
-		i++;
+		
+		pthread_create(&thread,NULL,AtenderCliente,&sock_conn);
+		
 	}
 }
 
