@@ -72,6 +72,7 @@
             this.ismael_btn.Size = new System.Drawing.Size(175, 250);
             this.ismael_btn.TabIndex = 29;
             this.ismael_btn.UseVisualStyleBackColor = true;
+            this.ismael_btn.Click += new System.EventHandler(this.ismael_btn_Click);
             // 
             // victor_btn
             // 
@@ -80,6 +81,7 @@
             this.victor_btn.Size = new System.Drawing.Size(175, 250);
             this.victor_btn.TabIndex = 30;
             this.victor_btn.UseVisualStyleBackColor = true;
+            this.victor_btn.Click += new System.EventHandler(this.victor_btn_Click);
             // 
             // pedro_btn
             // 
@@ -88,6 +90,7 @@
             this.pedro_btn.Size = new System.Drawing.Size(175, 250);
             this.pedro_btn.TabIndex = 32;
             this.pedro_btn.UseVisualStyleBackColor = true;
+            this.pedro_btn.Click += new System.EventHandler(this.pedro_btn_Click);
             // 
             // guillem_btn
             // 
@@ -96,6 +99,7 @@
             this.guillem_btn.Size = new System.Drawing.Size(175, 250);
             this.guillem_btn.TabIndex = 31;
             this.guillem_btn.UseVisualStyleBackColor = true;
+            this.guillem_btn.Click += new System.EventHandler(this.guillem_btn_Click);
             // 
             // itziar_btn
             // 
@@ -104,6 +108,7 @@
             this.itziar_btn.Size = new System.Drawing.Size(175, 250);
             this.itziar_btn.TabIndex = 34;
             this.itziar_btn.UseVisualStyleBackColor = true;
+            this.itziar_btn.Click += new System.EventHandler(this.itziar_btn_Click);
             // 
             // aza_button
             // 

@@ -12,6 +12,7 @@
 typedef struct{
 	char nombre[60];
 	int socket;
+	char avatar[10];
 }Conectado;
 
 typedef struct{
@@ -451,9 +452,18 @@ void *AtenderCliente(void *socket) {
 			p=strtok(NULL,"/");
 			char mensaje[100];
 			strcpy(mensaje,p);
+		
 			EnviarMensaje(ID,nombre,mensaje);
-			
-			
+		}
+		if(codigo==9){
+			p=strtok(NULL,"/");
+			char avatar[10];
+			strcpy(avatar,p);
+			p=strtok(NULL,"/");
+			int Id=atoi(p);
+			p=strtok(NULL,"/");
+			char sesion[30];
+			strcpy(sesion,p);
 			
 		}
 		

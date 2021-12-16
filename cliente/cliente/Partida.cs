@@ -21,6 +21,8 @@ namespace cliente
         int IDp;
         int nMensajes = 0;
         delegate void DelegadoParaEscribirMensaje(string mensaje);
+        Queue<string> cola =new Queue<string>();
+        string turno;
 
         string[] chatmensajes = new string[7];
         public Partida(Socket server, string[] trozos, string sesion)
@@ -31,6 +33,12 @@ namespace cliente
             Datos = trozos;
             this.sesion = sesion;
             IDp = Convert.ToInt32(trozos[Convert.ToInt32(trozos[1]) + 2]);
+            int num = Convert.ToInt32(trozos[1]);
+            for (int i = 0; i < num; i++)
+            {
+                cola.Enqueue(trozos[i + 2]);
+            }
+            
 
         }
 
@@ -97,6 +105,7 @@ namespace cliente
 
         private void Partida_Load(object sender, EventArgs e)
         {
+            
             int x = 175;
             int y = 25;
             string strButtonName = "btn_Tablero";  //Nombre que van a tener los botones del tablero
@@ -405,6 +414,8 @@ namespace cliente
 
             nBoton++;
 
+            turno = cola.Dequeue();
+
 
 
         }
@@ -486,7 +497,86 @@ namespace cliente
 
         private void aza_button_Click(object sender, EventArgs e)
         {
+            if (turno==sesion)
+            {
+                string mensaje = "9/aza/" + IDp + "/" + sesion;
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
 
+                this.Visible = false;
+                cola.Enqueue(turno);
+                turno = cola.Dequeue();
+            }
+        }
+
+        private void guillem_btn_Click(object sender, EventArgs e)
+        {
+            if (turno == sesion)
+            {
+                string mensaje = "9/guillem/" + IDp + "/" + sesion;
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+
+                this.Visible = false;
+                cola.Enqueue(turno);
+                turno = cola.Dequeue();
+            }
+        }
+
+        private void ismael_btn_Click(object sender, EventArgs e)
+        {
+            if (turno == sesion)
+            {
+                string mensaje = "9/ismael/" + IDp + "/" + sesion;
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+
+                this.Visible = false;
+                cola.Enqueue(turno);
+                turno = cola.Dequeue();
+            }
+        }
+
+        private void itziar_btn_Click(object sender, EventArgs e)
+        {
+            if (turno == sesion)
+            {
+                string mensaje = "9/itziar/" + IDp + "/" + sesion;
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+
+                this.Visible = false;
+                cola.Enqueue(turno);
+                turno = cola.Dequeue();
+            }
+        }
+
+        private void pedro_btn_Click(object sender, EventArgs e)
+        {
+            if (turno == sesion)
+            {
+                string mensaje = "9/pedro/" + IDp + "/" + sesion;
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+
+                this.Visible = false;
+                cola.Enqueue(turno);
+                turno = cola.Dequeue();
+            }
+        }
+
+        private void victor_btn_Click(object sender, EventArgs e)
+        {
+            if (turno == sesion)
+            {
+                string mensaje = "9/victor/" + IDp + "/" + sesion;
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+
+                this.Visible = false;
+                cola.Enqueue(turno);
+                turno = cola.Dequeue();
+            }
         }
     }
 }
