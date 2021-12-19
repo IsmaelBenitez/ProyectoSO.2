@@ -40,7 +40,7 @@ namespace cliente
         {
             //Establecemos conexión con el servidor
             IPAddress direc = IPAddress.Parse("169.254.15.179");
-            IPEndPoint ipep = new IPEndPoint(direc, 9000);
+            IPEndPoint ipep = new IPEndPoint(direc, 9070);
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
             {
@@ -314,6 +314,9 @@ namespace cliente
 
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                 server.Send(msg);
+                server.Shutdown(SocketShutdown.Both);
+                server.Close();
+                Atender.Abort();
             }
             catch
             {
@@ -385,13 +388,14 @@ namespace cliente
                                 MessageBox.Show("El gandor de la partida con id: " + textBox1.Text + " fue: " + trozos[1]);
                             break;
                         case 6:
-
+                            //Se actualiza la lista de conectados
                             DelegadoParaDataGridView delegado2 = new DelegadoParaDataGridView(PonerLista);
                             this.Invoke(delegado2, new object[] { trozos });
 
 
                             break;
                         case 7:
+                            //Llega la invitacion a la partida
                             string host = trozos[1];
                             int Id = Convert.ToInt32(trozos[2]);
                             DialogResult dialogResult = MessageBox.Show(host + " te ha invitado a unirte a su partida. Aceptas?", "Invitación", MessageBoxButtons.YesNo);
@@ -411,6 +415,7 @@ namespace cliente
                             }
                             break;
                         case 8:
+                            //Llega el mensaje de iniciar la partida
                             int j = 0;
                             MessageBox.Show("La partida va a empezar");
                             while (j < Convert.ToInt32(trozos[1]))
@@ -425,6 +430,7 @@ namespace cliente
 
                             break;
                         case 9:
+                            //Llega un mensaje para el chat
                             int ID = Convert.ToInt32(trozos[1]);
                             int i = 0;
                             Boolean encontrado = false;
@@ -438,11 +444,19 @@ namespace cliente
                             if (encontrado)
                             {
                                 formularios[i].RecibirMensaje(trozos[2]);
-                          
+
+                            }
+                            
+                            break;
+                        case 10:
+                            //Llega un avatar
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
+                            {
+                                formularios[i].RecibirAvatar(trozos[2], trozos[3]);
                             }
                             break;
-
-
                     }
                 }
                 catch (System.FormatException)
@@ -451,11 +465,7 @@ namespace cliente
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
-                    MessageBox.Show("El servidor ha fallado");
-                    server.Shutdown(SocketShutdown.Both);
-                    server.Close();
-                    Atender.Abort();
-                    this.Close();
+
                 }
             }
         }
@@ -620,9 +630,27 @@ namespace cliente
             IDs.Add(Id);
             f.ShowDialog();
         }
-        private void DarMensaje(string mensaje, int i)
+        public int EncontrarForm(int ID)
         {
-            formularios[i].RecibirMensaje(mensaje);
+            int i = 0;
+            Boolean encontrado = false;
+            while (i < IDs.Count && !encontrado)
+            {
+                if (IDs[i] == ID)
+                    encontrado = true;
+                else
+                    i++;
+            }
+            if (encontrado)
+            {
+                return i;
+
+            }
+            else
+            {
+                return -1;
+            }
         }
+
     }
 }

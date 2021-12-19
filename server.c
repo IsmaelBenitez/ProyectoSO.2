@@ -31,6 +31,18 @@ void inicializar(TPartidas tabla){
 	for(i=0; i<100; i++)
 		tabla[i].ocupado = 0;
 }
+//Estructuras y funciones para la baraja
+int Baraja[20];
+void inicializarBaraja(int baraja[20]){
+	int i=0;
+	while (i<20){
+		baraja[i]=i;
+		i++;
+	}
+}
+void RepartirCartas(Partida *partida, int baraja[20]){
+	
+}
 // Variable globales:
 MYSQL *conn; // Connector con el serivdor de MYSQL
 ListaConectados Lista; // Lista de conectados
@@ -155,6 +167,11 @@ void DameConectado(int socket,char *nombre[20]){
 		   i=i+1;
 	}
 }
+void AnadirAvatar(ListaConectados *lista, char sesion[20],char avatar[20]){
+	int i = DamePos (lista, sesion);
+	printf("i=%d\n",i);
+	strcpy(lista->conectados[i].avatar,avatar);
+}
 //Funciones para enviar notificaciones
 void EnviarLista (){
 	char notificacion[300];
@@ -206,6 +223,15 @@ void EmpezarPartida(int Id){
 void EnviarMensaje(int Id,char nombre[20],char mensaje[100]){
 	char notificacion[200];
 	sprintf(notificacion,"9/%d/%s: %s",Id,nombre,mensaje);
+	int i=0;
+	while(i<tabla[Id].Jugadores.num){
+		write (tabla[Id].Jugadores.conectados[i].socket,notificacion, strlen(notificacion));
+		i=i+1;
+	}
+}
+void EnviarAvatar(int Id,char sesion[20],char avatar[20]){
+	char notificacion[200];
+	sprintf(notificacion,"10/%d/%s/%s",Id,sesion,avatar);
 	printf("%s\n",notificacion);
 	int i=0;
 	while(i<tabla[Id].Jugadores.num){
@@ -457,13 +483,15 @@ void *AtenderCliente(void *socket) {
 		}
 		if(codigo==9){
 			p=strtok(NULL,"/");
-			char avatar[10];
+			char avatar[20];
 			strcpy(avatar,p);
 			p=strtok(NULL,"/");
 			int Id=atoi(p);
 			p=strtok(NULL,"/");
-			char sesion[30];
+			char sesion[20];
 			strcpy(sesion,p);
+			AnadirAvatar(&tabla[Id].Jugadores,sesion,avatar);
+			EnviarAvatar(Id,sesion,avatar);
 			
 		}
 		
@@ -738,16 +766,11 @@ int main(int argc, char *argv[]){
 	memset(&serv_adr, 0, sizeof(serv_adr));// inicialitza a zero serv_addr
 	serv_adr.sin_family = AF_INET;
 	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_adr.sin_port = htons(9000);
+	serv_adr.sin_port = htons(9070);
 	if (bind(sock_listen, (struct sockaddr *) &serv_adr, sizeof(serv_adr)) < 0)
 		printf ("Error al bind");
 	if (listen(sock_listen, 3) < 0)
 		printf("Error en el Listen");
-	
-	//Estructuras para el uso de threads
-	
-	
- 
 
 	// Bucle infinito de atender las peticiones abriendo threads
 	for (;;)

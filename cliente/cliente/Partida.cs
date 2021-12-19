@@ -21,8 +21,11 @@ namespace cliente
         int IDp;
         int nMensajes = 0;
         delegate void DelegadoParaEscribirMensaje(string mensaje);
+        delegate void DelegadoparaJugador(Jugador Jug);
         Queue<string> cola =new Queue<string>();
+        List<Jugador> Jugadores = new List<Jugador>();
         string turno;
+        int Num;
 
         string[] chatmensajes = new string[7];
         public Partida(Socket server, string[] trozos, string sesion)
@@ -38,8 +41,6 @@ namespace cliente
             {
                 cola.Enqueue(trozos[i + 2]);
             }
-            
-
         }
 
         private void btn_chat_Click(object sender, EventArgs e)
@@ -51,14 +52,24 @@ namespace cliente
                 server.Send(msg);
                 MensajeBox.Clear();
             }
+            
 
         }
 
         public void RecibirMensaje(string mensaje)
         {
             DelegadoParaEscribirMensaje delegado = new DelegadoParaEscribirMensaje(EscribeMensaje);
-            this.Invoke(delegado, new object[] { mensaje });
+            Invoke(delegado, new object[] { mensaje });
         }
+        public void RecibirAvatar(string nombre,string avatar)
+        {
+            Jugador Jug = new Jugador(nombre, avatar);
+            DelegadoparaJugador delegado = new DelegadoparaJugador(PonJugador);
+            Invoke(delegado, new object[] { Jug });
+            
+        
+        }
+        
         private void EscribeMensaje(string mensaje)
         {
             if (nMensajes < 6)
@@ -87,6 +98,59 @@ namespace cliente
                 }
 
             }
+        }
+        private void PonJugador(Jugador Jug)
+        {
+            Jugadores.Add(Jug);
+            cola.Enqueue(turno);
+            turno = cola.Dequeue();
+            string avatar = Jug.GetAvatar();
+            switch (avatar)
+            {
+                case "aza":
+                    aza_button.Visible = false;
+                    Controls.Add(Jugadores[Jugadores.Count() - 1].GetPictureBox());
+                    Jugadores[Jugadores.Count() - 1].GetPictureBox().BringToFront();
+
+                    break;
+                case "guillem":
+                    guillem_btn.Visible = false;
+                    Controls.Add(Jugadores[Jugadores.Count() - 1].GetPictureBox());
+                    Jugadores[Jugadores.Count() - 1].GetPictureBox().BringToFront();
+                    break;
+                case "ismael":
+                    ismael_btn.Visible = false;
+                    Controls.Add(Jugadores[Jugadores.Count() - 1].GetPictureBox());
+                    Jugadores[Jugadores.Count() - 1].GetPictureBox().BringToFront();
+                    break;
+                case "itziar":
+                    itziar_btn.Visible = false;
+                    Controls.Add(Jugadores[Jugadores.Count() - 1].GetPictureBox());
+                    Jugadores[Jugadores.Count() - 1].GetPictureBox().BringToFront();
+                    break;
+                case "pedro":
+                    pedro_btn.Visible = false;
+                    Controls.Add(Jugadores[Jugadores.Count() - 1].GetPictureBox());
+                    Jugadores[Jugadores.Count() - 1].GetPictureBox().BringToFront();
+                    break;
+                case "victor":
+                    victor_btn.Visible = false;
+                    Controls.Add(Jugadores[Jugadores.Count() - 1].GetPictureBox());
+                    Jugadores[Jugadores.Count() - 1].GetPictureBox().BringToFront();
+                    break;
+            }
+            Num++;
+            if (Num >= cola.Count()+1)
+            {
+                aza_button.Visible = false;
+                guillem_btn.Visible = false;
+                ismael_btn.Visible = false;
+                itziar_btn.Visible = false;
+                pedro_btn.Visible = false;
+                victor_btn.Visible = false;
+            }
+            
+           
         }
 
         private void MensajeBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -503,9 +567,8 @@ namespace cliente
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
 
-                this.Visible = false;
-                cola.Enqueue(turno);
-                turno = cola.Dequeue();
+                
+               
             }
         }
 
@@ -517,9 +580,8 @@ namespace cliente
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
 
-                this.Visible = false;
-                cola.Enqueue(turno);
-                turno = cola.Dequeue();
+                
+                
             }
         }
 
@@ -531,9 +593,8 @@ namespace cliente
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
 
-                this.Visible = false;
-                cola.Enqueue(turno);
-                turno = cola.Dequeue();
+                
+                
             }
         }
 
@@ -545,9 +606,8 @@ namespace cliente
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
 
-                this.Visible = false;
-                cola.Enqueue(turno);
-                turno = cola.Dequeue();
+                
+               
             }
         }
 
@@ -559,9 +619,8 @@ namespace cliente
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
 
-                this.Visible = false;
-                cola.Enqueue(turno);
-                turno = cola.Dequeue();
+                
+                
             }
         }
 
@@ -573,9 +632,8 @@ namespace cliente
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
 
-                this.Visible = false;
-                cola.Enqueue(turno);
-                turno = cola.Dequeue();
+                
+               
             }
         }
     }
