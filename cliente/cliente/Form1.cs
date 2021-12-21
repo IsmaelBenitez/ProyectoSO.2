@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace cliente
 {
@@ -27,10 +28,7 @@ namespace cliente
         int invitados;
         string sesion;
         string[] orden = new string[6];
-     
-
-
-        
+        string key = "mykey";
         public Form1()
         {
             InitializeComponent();
@@ -40,7 +38,7 @@ namespace cliente
         {
             //Establecemos conexión con el servidor
             IPAddress direc = IPAddress.Parse("169.254.15.179");
-            IPEndPoint ipep = new IPEndPoint(direc, 9070);
+            IPEndPoint ipep = new IPEndPoint(direc, 9000);
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
             {
@@ -162,9 +160,9 @@ namespace cliente
                 try
                 {
 
-
+                    string contraseña = Encriptar(Contra1Text.Text);
                     //Generamos el mensaje de petición de iniciar sesión
-                    string Mensaje = "1/" + nombre1Text.Text + "/" + Contra1Text.Text;
+                    string Mensaje = "1/" + nombre1Text.Text + "/" + contraseña;
 
                     byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                     server.Send(msg);                    
@@ -225,10 +223,10 @@ namespace cliente
                 errorProvider1.SetError(Contra3Text, string.Empty);
                 try
                 {
-
+                    string contraseña = Encriptar(Contra2Text.Text);
 
                     //Generamos el mensaje de petición de iniciar sesión
-                    string Mensaje = "2/" + Nombre2Text.Text + "/" + Contra2Text.Text;
+                    string Mensaje = "2/" + Nombre2Text.Text + "/" + contraseña;
 
                     byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                     server.Send(msg);
@@ -457,6 +455,26 @@ namespace cliente
                                 formularios[i].RecibirAvatar(trozos[2], trozos[3]);
                             }
                             break;
+                        case 11:
+                            //Llega la combinacion ganadora Asesino/Arma/Lugar
+                            MessageBox.Show(trozos[1]+" "+trozos[2]+ " " + trozos[3] );
+                            break;
+                        case 12:
+                            //Llegan tus cartas
+                            MessageBox.Show(trozos[1]);
+                            string cartas=string.Empty;
+                            for(i=0; i < Convert.ToInt32(trozos[1]); i++)
+                            {
+                                cartas = $"{cartas}{trozos[i + 2]}";
+                            }
+                           
+                            MessageBox.Show(cartas);
+                            
+                            break;
+                        case 13:
+                            MessageBox.Show(trozos[1]);
+                            MessageBox.Show(trozos[2]);
+                            break;
                     }
                 }
                 catch (System.FormatException)
@@ -651,6 +669,53 @@ namespace cliente
                 return -1;
             }
         }
+        public string Encriptar(string texto)
+        {
+            //arreglo de bytes donde guardaremos la llave
+            byte[] keyArray;
+            //arreglo de bytes donde guardaremos el texto
+            //que vamos a encriptar
+            byte[] Arreglo_a_Cifrar =
+            UTF8Encoding.UTF8.GetBytes(texto);
+
+            //se utilizan las clases de encriptación
+            //provistas por el Framework
+            //Algoritmo MD5
+            MD5CryptoServiceProvider hashmd5 =
+            new MD5CryptoServiceProvider();
+            //se guarda la llave para que se le realice
+            //hashing
+            keyArray = hashmd5.ComputeHash(
+            UTF8Encoding.UTF8.GetBytes(key));
+
+            hashmd5.Clear();
+
+            //Algoritmo 3DAS
+            TripleDESCryptoServiceProvider tdes =
+            new TripleDESCryptoServiceProvider();
+
+            tdes.Key = keyArray;
+            tdes.Mode = CipherMode.ECB;
+            tdes.Padding = PaddingMode.PKCS7;
+
+            //se empieza con la transformación de la cadena
+            ICryptoTransform cTransform =
+            tdes.CreateEncryptor();
+
+            //arreglo de bytes donde se guarda la
+            //cadena cifrada
+            byte[] ArrayResultado =
+            cTransform.TransformFinalBlock(Arreglo_a_Cifrar,
+            0, Arreglo_a_Cifrar.Length);
+
+            tdes.Clear();
+
+            //se regresa el resultado en forma de una cadena
+            return Convert.ToBase64String(ArrayResultado,
+            0, ArrayResultado.Length);
+        }
+
+
 
     }
 }

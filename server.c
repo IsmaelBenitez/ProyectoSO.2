@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <mysql.h>
 #include <pthread.h>
+#include<time.h>
 
 //Estructuras para la lista de conectados
 typedef struct{
@@ -18,6 +19,7 @@ typedef struct{
 typedef struct{
 	Conectado conectados[100];
 	int num;
+	int avatares;
 }ListaConectados;
 typedef struct{
 	int ocupado;
@@ -33,14 +35,84 @@ void inicializar(TPartidas tabla){
 }
 //Estructuras y funciones para la baraja
 int Baraja[20];
-void inicializarBaraja(int baraja[20]){
+void InicializarBaraja(int baraja[20]){
 	int i=0;
 	while (i<20){
 		baraja[i]=i;
 		i++;
 	}
 }
-void RepartirCartas(Partida *partida, int baraja[20]){
+
+void RepartirCartas(Partida *partida){
+	int cont=20;
+	srand(time(0));
+	int i = rand() %6; // Personas
+	int j = rand() %8; //Armas
+	int k = rand() %6; // Lugar
+	j=j+6;
+	k=k+14;
+	printf("i=%d,j=%d,k=%d",i,j,k);
+	char Combinacion[100];
+	sprintf(Combinacion,"11/%d/%d/%d",i,j,k);
+	printf("Combinacion ganadora : %s\n",Combinacion);
+	for (int p=0; p<partida->Jugadores.num;p++){
+		write(partida->Jugadores.conectados[p].socket,Combinacion,strlen(Combinacion));
+	}
+	cont = SacarCartas(Baraja,i,cont);
+	cont = SacarCartas(Baraja,j-1,cont);
+	cont = SacarCartas(Baraja,k-2,cont);
+	
+	sleep(1);	
+	int jug = partida->Jugadores.num;
+	div_t resultadoDeLaDivision=div(17,jug);
+	int cartas = resultadoDeLaDivision.quot; 
+	printf("Numero de cartas:%d \n",cartas);
+	
+	for(int p=0;p<jug;p++){
+		char mano[100];
+		bzero(mano, 100);
+		for (int n=0;n<cartas;n++){
+			i = rand() %(cont-1);
+			printf("i=%d\n",i);
+			sprintf(mano,"%s/%d",mano,Baraja[i]);
+			printf("mensaje: %s\n",mano);
+			printf("Carta: %d\n",Baraja[i]);
+			cont = SacarCartas(Baraja,i,cont);
+		}
+		char mensaje[200];
+		bzero(mensaje,200);
+		sprintf(mensaje,"12/%d%s",cartas,mano);
+		printf("Cartas de un jugador: %s\n",mensaje);
+		write(partida->Jugadores.conectados[p].socket,mensaje,strlen(mensaje));
+	}
+	sleep(1);
+	int n=0;
+	int sum=0;
+	char sobrantes[200];
+	bzero(sobrantes,200);
+	while (Baraja[n]!=-1){
+		sprintf(sobrantes,"%s/%d",sobrantes,Baraja[n]);
+		sum++;
+		n++;
+	}
+	char sobran[100];
+	
+	sprintf(sobran,"13/%d%s",sum,sobrantes);
+	printf("sobrantes: %s\n",sobran);
+	for (int p=0;p< partida->Jugadores.num;p++){
+		write(partida->Jugadores.conectados[p].socket,sobran,strlen(sobran));
+	}
+	
+}
+int SacarCartas(int baraja[20],int i,int cont){
+	while (i<19){
+		baraja[i]=baraja[i+1];
+		i++;
+	}
+	baraja[19]=-1;
+	
+	cont -- ;
+	return cont;
 	
 }
 // Variable globales:
@@ -171,6 +243,7 @@ void AnadirAvatar(ListaConectados *lista, char sesion[20],char avatar[20]){
 	int i = DamePos (lista, sesion);
 	printf("i=%d\n",i);
 	strcpy(lista->conectados[i].avatar,avatar);
+	lista->avatares++;
 }
 //Funciones para enviar notificaciones
 void EnviarLista (){
@@ -278,10 +351,10 @@ void *AtenderCliente(void *socket) {
 		printf("COdigo: %d\n",codigo);
 		
 		
-		if (codigo==0)
+		if (codigo==0){
 			terminar=1;
-		if(codigo==1)
-		{
+		}
+		if (codigo==1){
 			
 			char contra[60];
 			
@@ -327,8 +400,7 @@ void *AtenderCliente(void *socket) {
 			
 			
 		}
-		if (codigo==2)
-		{
+		if (codigo==2){
 			
 			char contra[60];
 			
@@ -371,8 +443,7 @@ void *AtenderCliente(void *socket) {
 			}
 			
 		}
-		if (codigo==3)
-		{
+		if (codigo==3){
 			char nombre[60];
 			
 			p=strtok(NULL,"/");
@@ -389,8 +460,7 @@ void *AtenderCliente(void *socket) {
 				write (sock_conn,respuesta, strlen(respuesta));
 			
 		}
-		if (codigo==4)
-		{
+		if (codigo==4){
 			char nombre[60];
 			
 			p=strtok(NULL,"/");
@@ -399,8 +469,7 @@ void *AtenderCliente(void *socket) {
 			write (sock_conn,respuesta, strlen(respuesta));
 			
 		}
-		if (codigo==5)
-		{
+		if (codigo==5){
 			char identificador[60];
 			char nombre[60];
 			p=strtok(NULL,"/");
@@ -409,8 +478,7 @@ void *AtenderCliente(void *socket) {
 			write (sock_conn,nombre, strlen(nombre));
 			
 		}
-		if (codigo==6)
-		{
+		if (codigo==6){
 			int invitaciones=0;
 			int puesta=0;
 			int i=0;
@@ -490,8 +558,15 @@ void *AtenderCliente(void *socket) {
 			p=strtok(NULL,"/");
 			char sesion[20];
 			strcpy(sesion,p);
+			pthread_mutex_lock(&mutex);
 			AnadirAvatar(&tabla[Id].Jugadores,sesion,avatar);
+			pthread_mutex_unlock(&mutex);
 			EnviarAvatar(Id,sesion,avatar);
+			
+			if(tabla[Id].Jugadores.avatares==tabla[Id].Jugadores.num){
+				InicializarBaraja(Baraja);
+				RepartirCartas(&tabla[Id]);
+			}
 			
 		}
 		
@@ -766,7 +841,7 @@ int main(int argc, char *argv[]){
 	memset(&serv_adr, 0, sizeof(serv_adr));// inicialitza a zero serv_addr
 	serv_adr.sin_family = AF_INET;
 	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_adr.sin_port = htons(9070);
+	serv_adr.sin_port = htons(9000);
 	if (bind(sock_listen, (struct sockaddr *) &serv_adr, sizeof(serv_adr)) < 0)
 		printf ("Error al bind");
 	if (listen(sock_listen, 3) < 0)
