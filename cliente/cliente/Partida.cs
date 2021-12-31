@@ -20,13 +20,21 @@ namespace cliente
         string sesion;
         int IDp;
         int nMensajes = 0;
+        int dado = 0;
+
         delegate void DelegadoParaEscribirMensaje(string mensaje);
         delegate void DelegadoparaJugador(Jugador Jug);
+        delegate void DelegadoParaCartas(Carta carta);
+        delegate void Delegado(string[] trozos);
+
+     
         Queue<string> cola =new Queue<string>();
         List<Jugador> Jugadores = new List<Jugador>();
+        List<Carta> Ganadoras = new List<Carta>();
+        List<Carta> MisCartas = new List<Carta>();
+
         string turno;
         int Num;
-
         string[] chatmensajes = new string[7];
         public Partida(Socket server, string[] trozos, string sesion)
         {
@@ -35,6 +43,7 @@ namespace cliente
             this.server = server;
             Datos = trozos;
             this.sesion = sesion;
+            
             IDp = Convert.ToInt32(trozos[Convert.ToInt32(trozos[1]) + 2]);
             int num = Convert.ToInt32(trozos[1]);
             for (int i = 0; i < num; i++)
@@ -83,15 +92,15 @@ namespace cliente
                 Chat.Text = string.Empty;
                 chatmensajes[0] = null;
                 int i = 1;
-                while (i < nMensajes)
+                while (i < 6)
                 {
                     chatmensajes[i - 1] = chatmensajes[i];
                     i++;
                 }
-                chatmensajes[nMensajes] = mensaje;
+                chatmensajes[5] = mensaje;
                 int j = 1;
                 Chat.Text = chatmensajes[0];
-                while (j <= nMensajes)
+                while (j < 6)
                 {
                     Chat.Text = Chat.Text + Environment.NewLine + chatmensajes[j];
                     j++;
@@ -486,16 +495,37 @@ namespace cliente
 
         private void btn_click(object sender, EventArgs e)
         {
-            MessageBox.Show("Hola");
+            if (sesion == turno)
+            {
+                Button cb = (sender as Button);
+                int i = DameJugador(sesion);
+                Boolean Puedes = Distancia(cb.Location, Jugadores[i].GetPoint(), dado);
+                
+                if (Puedes)
+                {
+                    Point Nuevo = new Point(cb.Location.X, cb.Location.Y);
+                    Boolean Libre = CasillaLibre(Nuevo);
+                    if (Libre)
+                    {
+                        Jugadores[i].RefreshLocation(Nuevo);
+                        string Mensaje = "10/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                        server.Send(msg);
+                        cola.Enqueue(turno);
+                        turno = cola.Dequeue();
+                    }
+                }
+            }
+            
         }
 
         private Boolean Distancia(Point Casilla, Point Localizacion,int dado)
         {
             
-            int distY = Math.Abs(Casilla.Y - Localizacion.Y);
-            int distX = Math.Abs(Casilla.X - Localizacion.X);
+            float distY = Math.Abs(Casilla.Y - Localizacion.Y);
+            float distX = Math.Abs(Casilla.X - Localizacion.X);
 
-            int dist = distY + distX;
+            float dist = distY + distX;
             
             if(dist == dado * 50)
             {
@@ -512,7 +542,7 @@ namespace cliente
             int distY = Math.Abs(Casilla.Y - Localizacion.Y);
             int distX = Math.Abs(Casilla.X - Localizacion.X);
 
-            int dist = distY + distX;
+            int dist = distY + distX + 50;
 
             if (dist <= dado * 50)
             {
@@ -526,37 +556,525 @@ namespace cliente
 
         private void room1_Click(object sender, EventArgs e)
         {
+
+            if (turno == sesion)
+            {
+                int i = DameJugador(sesion);
+                Boolean Puedes = DistanciaRoom(new Point(175, 125), Jugadores[i].GetPoint(), dado);
+                if (Puedes)
+                {
+                    if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
+                    {
+                        MessageBox.Show("Por favor, selecciona  tu acusación antes de entrar a la sala.");
+                    }
+                    else
+                    {
+                        Point Nuevo = new Point(125, 125);
+                        Boolean Libre = CasillaLibre(Nuevo);
+                        Jugadores[i].RefreshLocation(Nuevo);
+
+                        if (!Libre)
+                        {
+                            Nuevo = new Point(75, 125);
+                            Libre = CasillaLibre(Nuevo);
+                            if (Libre)
+                                Jugadores[i].SetPictureBox(Nuevo);
+                            else
+                            {
+                                Nuevo = new Point(25, 125);
+                                Libre = CasillaLibre(Nuevo);
+                                if (Libre)
+                                    Jugadores[i].SetPictureBox(Nuevo);
+                                else
+                                {
+                                    Nuevo = new Point(125, 75);
+                                    Libre = CasillaLibre(Nuevo);
+                                    if (Libre)
+                                        Jugadores[i].SetPictureBox(Nuevo);
+                                    else
+                                    {
+                                        Nuevo = new Point(75, 75);
+                                        Libre = CasillaLibre(Nuevo);
+                                        if (Libre)
+                                            Jugadores[i].SetPictureBox(Nuevo);
+                                        else
+                                        {
+                                            Nuevo = new Point(25, 75);
+                                            Libre = CasillaLibre(Nuevo);
+                                            if (Libre)
+                                                Jugadores[i].SetPictureBox(Nuevo);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        int asesino = listBox1.SelectedIndex;
+                        int arma = listBox2.SelectedIndex + 6;
+                        int lugar = 14;
+                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y+"/"+asesino+"/"+arma+"/"+lugar;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                        server.Send(msg);
+                        cola.Enqueue(turno);
+                        turno = cola.Dequeue();
+                    }
+                }
+            }
             
         }
 
         private void room2_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (turno == sesion)
+            {
+                int i = DameJugador(sesion);
+                Boolean Puedes = DistanciaRoom(new Point(325, 125), Jugadores[i].GetPoint(), dado);
+                if (Puedes)
+                {
+                    if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
+                    {
+                        MessageBox.Show("Por favor, selecciona  tu acusación antes de entrar a la sala.");
+                    }
+                    else
+                    {
+                        Point Nuevo = new Point(375, 125);
+                        Boolean Libre = CasillaLibre(Nuevo);
+                        Jugadores[i].RefreshLocation(Nuevo);
+
+                        if (!Libre)
+                        {
+                            Nuevo = new Point(425, 125);
+                            Libre = CasillaLibre(Nuevo);
+                            if (Libre)
+                                Jugadores[i].SetPictureBox(Nuevo);
+                            else
+                            {
+                                Nuevo = new Point(475, 125);
+                                Libre = CasillaLibre(Nuevo);
+                                if (Libre)
+                                    Jugadores[i].SetPictureBox(Nuevo);
+                                else
+                                {
+                                    Nuevo = new Point(375, 75);
+                                    Libre = CasillaLibre(Nuevo);
+                                    if (Libre)
+                                        Jugadores[i].SetPictureBox(Nuevo);
+                                    else
+                                    {
+                                        Nuevo = new Point(425, 75);
+                                        Libre = CasillaLibre(Nuevo);
+                                        if (Libre)
+                                            Jugadores[i].SetPictureBox(Nuevo);
+                                        else
+                                        {
+                                            Nuevo = new Point(475, 75);
+                                            Libre = CasillaLibre(Nuevo);
+                                            if (Libre)
+                                                Jugadores[i].SetPictureBox(Nuevo);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        int asesino = listBox1.SelectedIndex;
+                        int arma = listBox2.SelectedIndex + 6;
+                        int lugar = 15;
+                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                        server.Send(msg);
+                        cola.Enqueue(turno);
+                        turno = cola.Dequeue();
+                    }
+                }
+            }
         }
 
         private void room7_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (turno == sesion)
+            {
+                int i = DameJugador(sesion);
+                Boolean Puedes = DistanciaRoom(new Point(225, 225), Jugadores[i].GetPoint(), dado);
+                Boolean TambienPuedes = DistanciaRoom(new Point(275, 225), Jugadores[i].GetPoint(), dado);
+                if (Puedes)
+                {
+                    if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
+                    {
+                        MessageBox.Show("Por favor, selecciona  tu acusación antes de entrar a la sala.");
+                    }
+                    else
+                    {
+                        Point Nuevo = new Point(225, 275);
+                        Boolean Libre = CasillaLibre(Nuevo);
+                        Jugadores[i].RefreshLocation(Nuevo);
+
+                        if (!Libre)
+                        {
+                            Nuevo = new Point(225, 325);
+                            Libre = CasillaLibre(Nuevo);
+                            if (Libre)
+                                Jugadores[i].SetPictureBox(Nuevo);
+                            else
+                            {
+                                Nuevo = new Point(225, 375);
+                                Libre = CasillaLibre(Nuevo);
+                                if (Libre)
+                                    Jugadores[i].SetPictureBox(Nuevo);
+                                else
+                                {
+                                    Nuevo = new Point(275, 275);
+                                    Libre = CasillaLibre(Nuevo);
+                                    if (Libre)
+                                        Jugadores[i].SetPictureBox(Nuevo);
+                                    else
+                                    {
+                                        Nuevo = new Point(275, 325);
+                                        Libre = CasillaLibre(Nuevo);
+                                        if (Libre)
+                                            Jugadores[i].SetPictureBox(Nuevo);
+                                        else
+                                        {
+                                            Nuevo = new Point(275, 375);
+                                            Libre = CasillaLibre(Nuevo);
+                                            if (Libre)
+                                                Jugadores[i].SetPictureBox(Nuevo);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        int asesino = listBox1.SelectedIndex;
+                        int arma = listBox2.SelectedIndex + 6;
+                        int lugar = 15;
+                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                        server.Send(msg);
+                        cola.Enqueue(turno);
+                        turno = cola.Dequeue();
+                    }
+                }
+                else if (TambienPuedes)
+                {
+                    if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
+                    {
+                        MessageBox.Show("Por favor, selecciona  tu acusación antes de entrar a la sala.");
+                    }
+                    else
+                    {
+                        Point Nuevo = new Point(275, 275);
+                        Boolean Libre = CasillaLibre(Nuevo);
+                        Jugadores[i].RefreshLocation(Nuevo);
+
+                        if (!Libre)
+                        {
+                            Nuevo = new Point(225, 325);
+                            Libre = CasillaLibre(Nuevo);
+                            if (Libre)
+                                Jugadores[i].SetPictureBox(Nuevo);
+                            else
+                            {
+                                Nuevo = new Point(225, 375);
+                                Libre = CasillaLibre(Nuevo);
+                                if (Libre)
+                                    Jugadores[i].SetPictureBox(Nuevo);
+                                else
+                                {
+                                    Nuevo = new Point(275, 275);
+                                    Libre = CasillaLibre(Nuevo);
+                                    if (Libre)
+                                        Jugadores[i].SetPictureBox(Nuevo);
+                                    else
+                                    {
+                                        Nuevo = new Point(275, 325);
+                                        Libre = CasillaLibre(Nuevo);
+                                        if (Libre)
+                                            Jugadores[i].SetPictureBox(Nuevo);
+                                        else
+                                        {
+                                            Nuevo = new Point(275, 375);
+                                            Libre = CasillaLibre(Nuevo);
+                                            if (Libre)
+                                                Jugadores[i].SetPictureBox(Nuevo);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void room6_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (turno == sesion)
+            {
+                int i = DameJugador(sesion);
+                Boolean Puedes = DistanciaRoom(new Point(375, 425), Jugadores[i].GetPoint(), dado);
+                if (Puedes)
+                {
+                    if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
+                    {
+                        MessageBox.Show("Por favor, selecciona  tu acusación antes de entrar a la sala.");
+                    }
+                    else
+                    {
+                        Point Nuevo = new Point(375, 375);
+                        Boolean Libre = CasillaLibre(Nuevo);
+                        Jugadores[i].RefreshLocation(Nuevo);
+
+                        if (!Libre)
+                        {
+                            Nuevo = new Point(425, 375);
+                            Libre = CasillaLibre(Nuevo);
+                            if (Libre)
+                                Jugadores[i].SetPictureBox(Nuevo);
+                            else
+                            {
+                                Nuevo = new Point(475, 375);
+                                Libre = CasillaLibre(Nuevo);
+                                if (Libre)
+                                    Jugadores[i].SetPictureBox(Nuevo);
+                                else
+                                {
+                                    Nuevo = new Point(375, 325);
+                                    Libre = CasillaLibre(Nuevo);
+                                    if (Libre)
+                                        Jugadores[i].SetPictureBox(Nuevo);
+                                    else
+                                    {
+                                        Nuevo = new Point(425, 325);
+                                        Libre = CasillaLibre(Nuevo);
+                                        if (Libre)
+                                            Jugadores[i].SetPictureBox(Nuevo);
+                                        else
+                                        {
+                                            Nuevo = new Point(475, 325);
+                                            Libre = CasillaLibre(Nuevo);
+                                            if (Libre)
+                                                Jugadores[i].SetPictureBox(Nuevo);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        int asesino = listBox1.SelectedIndex;
+                        int arma = listBox2.SelectedIndex + 6;
+                        int lugar = 17;
+                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                        server.Send(msg);
+                        cola.Enqueue(turno);
+                        turno = cola.Dequeue();
+                    }
+                }
+            }
         }
 
         private void room5_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (turno == sesion)
+            {
+                int i = DameJugador(sesion);
+                Boolean Puedes = DistanciaRoom(new Point(325, 525), Jugadores[i].GetPoint(), dado);
+                if (Puedes)
+                {
+                    if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
+                    {
+                        MessageBox.Show("Por favor, selecciona  tu acusación antes de entrar a la sala.");
+                    }
+                    else
+                    {
+                        Point Nuevo = new Point(375, 525);
+                        Boolean Libre = CasillaLibre(Nuevo);
+                        Jugadores[i].RefreshLocation(Nuevo);
+
+                        if (!Libre)
+                        {
+                            Nuevo = new Point(425, 525);
+                            Libre = CasillaLibre(Nuevo);
+                            if (Libre)
+                                Jugadores[i].SetPictureBox(Nuevo);
+                            else
+                            {
+                                Nuevo = new Point(475, 525);
+                                Libre = CasillaLibre(Nuevo);
+                                if (Libre)
+                                    Jugadores[i].SetPictureBox(Nuevo);
+                                else
+                                {
+                                    Nuevo = new Point(375, 475);
+                                    Libre = CasillaLibre(Nuevo);
+                                    if (Libre)
+                                        Jugadores[i].SetPictureBox(Nuevo);
+                                    else
+                                    {
+                                        Nuevo = new Point(425, 475);
+                                        Libre = CasillaLibre(Nuevo);
+                                        if (Libre)
+                                            Jugadores[i].SetPictureBox(Nuevo);
+                                        else
+                                        {
+                                            Nuevo = new Point(475, 475);
+                                            Libre = CasillaLibre(Nuevo);
+                                            if (Libre)
+                                                Jugadores[i].SetPictureBox(Nuevo);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        int asesino = listBox1.SelectedIndex;
+                        int arma = listBox2.SelectedIndex + 6;
+                        int lugar = 18;
+                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                        server.Send(msg);
+                        cola.Enqueue(turno);
+                        turno = cola.Dequeue();
+                    }
+                }
+            }
         }
 
         private void room4_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+
+            if (turno == sesion)
+            {
+                int i = DameJugador(sesion);
+                Boolean Puedes = DistanciaRoom(new Point(175, 525), Jugadores[i].GetPoint(), dado);
+                if (Puedes)
+                {
+                    if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
+                    {
+                        MessageBox.Show("Por favor, selecciona  tu acusación antes de entrar a la sala.");
+                    }
+                    else
+                    {
+                        Point Nuevo = new Point(125, 525);
+                        Boolean Libre = CasillaLibre(Nuevo);
+                        Jugadores[i].RefreshLocation(Nuevo);
+
+                        if (!Libre)
+                        {
+                            Nuevo = new Point(75, 525);
+                            Libre = CasillaLibre(Nuevo);
+                            if (Libre)
+                                Jugadores[i].SetPictureBox(Nuevo);
+                            else
+                            {
+                                Nuevo = new Point(25, 525);
+                                Libre = CasillaLibre(Nuevo);
+                                if (Libre)
+                                    Jugadores[i].SetPictureBox(Nuevo);
+                                else
+                                {
+                                    Nuevo = new Point(125, 475);
+                                    Libre = CasillaLibre(Nuevo);
+                                    if (Libre)
+                                        Jugadores[i].SetPictureBox(Nuevo);
+                                    else
+                                    {
+                                        Nuevo = new Point(75, 475);
+                                        Libre = CasillaLibre(Nuevo);
+                                        if (Libre)
+                                            Jugadores[i].SetPictureBox(Nuevo);
+                                        else
+                                        {
+                                            Nuevo = new Point(25, 475);
+                                            Libre = CasillaLibre(Nuevo);
+                                            if (Libre)
+                                                Jugadores[i].SetPictureBox(Nuevo);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        int asesino = listBox1.SelectedIndex;
+                        int arma = listBox2.SelectedIndex + 6;
+                        int lugar = 19;
+                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                        server.Send(msg);
+                        cola.Enqueue(turno);
+                        turno = cola.Dequeue();
+                    }
+                }
+            }
         }
 
         private void room3_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("hols");
+
+            if (turno == sesion)
+            {
+                int i = DameJugador(sesion);
+                Boolean Puedes = DistanciaRoom(new Point(125, 425), Jugadores[i].GetPoint(), dado);
+                if (Puedes)
+                {
+                    if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
+                    {
+                        MessageBox.Show("Por favor, selecciona  tu acusación antes de entrar a la sala.");
+                    }
+                    else
+                    {
+                        Point Nuevo = new Point(125, 375);
+                        Boolean Libre = CasillaLibre(Nuevo);
+                        Jugadores[i].RefreshLocation(Nuevo);
+
+                        if (!Libre)
+                        {
+                            Nuevo = new Point(75, 375);
+                            Libre = CasillaLibre(Nuevo);
+                            if (Libre)
+                                Jugadores[i].SetPictureBox(Nuevo);
+                            else
+                            {
+                                Nuevo = new Point(25, 375);
+                                Libre = CasillaLibre(Nuevo);
+                                if (Libre)
+                                    Jugadores[i].SetPictureBox(Nuevo);
+                                else
+                                {
+                                    Nuevo = new Point(125, 325);
+                                    Libre = CasillaLibre(Nuevo);
+                                    if (Libre)
+                                        Jugadores[i].SetPictureBox(Nuevo);
+                                    else
+                                    {
+                                        Nuevo = new Point(75, 325);
+                                        Libre = CasillaLibre(Nuevo);
+                                        if (Libre)
+                                            Jugadores[i].SetPictureBox(Nuevo);
+                                        else
+                                        {
+                                            Nuevo = new Point(25, 325);
+                                            Libre = CasillaLibre(Nuevo);
+                                            if (Libre)
+                                                Jugadores[i].SetPictureBox(Nuevo);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        int asesino = listBox1.SelectedIndex;
+                        int arma = listBox2.SelectedIndex + 6;
+                        int lugar = 20;
+                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                        server.Send(msg);
+                        cola.Enqueue(turno);
+                        turno = cola.Dequeue();
+                    }
+                }
+            }
         }
 
         private void aza_button_Click(object sender, EventArgs e)
@@ -566,9 +1084,7 @@ namespace cliente
                 string mensaje = "9/aza/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-
                 
-               
             }
         }
 
@@ -579,9 +1095,7 @@ namespace cliente
                 string mensaje = "9/guillem/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-
-                
-                
+             
             }
         }
 
@@ -592,8 +1106,6 @@ namespace cliente
                 string mensaje = "9/ismael/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-
-                
                 
             }
         }
@@ -605,9 +1117,7 @@ namespace cliente
                 string mensaje = "9/itziar/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-
                 
-               
             }
         }
 
@@ -618,8 +1128,6 @@ namespace cliente
                 string mensaje = "9/pedro/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-
-                
                 
             }
         }
@@ -631,10 +1139,349 @@ namespace cliente
                 string mensaje = "9/victor/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-
                 
-               
             }
+        }
+        public void CartasGanadoras(string[] cartas)
+        {
+            int i = 2;
+            while (i <= 4)
+            {
+                Carta Carta = new Carta(Convert.ToInt32(cartas[i]));
+                DelegadoParaCartas delegado = new DelegadoParaCartas(PonCartaGanadora);
+                Invoke(delegado, new object[] { Carta });
+                i++;
+            }
+        }
+        private void PonCartaGanadora(Carta carta)
+        {
+            Ganadoras.Add(carta);
+        }
+        public void CartasPersonales(string[] cartas)
+        {
+            int i = 0;
+            while (i < Convert.ToInt32(cartas[2]))
+            {
+                Carta Carta = new Carta(Convert.ToInt32(cartas[i+3]));
+                DelegadoParaCartas delegado = new DelegadoParaCartas(PonMiCarta);
+                Invoke(delegado, new object[] { Carta });
+                i++;
+            }
+            
+           
+        }
+        private void PonMiCarta(Carta carta)
+        {
+            MisCartas.Add(carta);
+        }
+        public void CartasSobrantes(string[] cartas)
+        {
+            int i = 0;
+            timer1.Interval = 3000;
+            while (i < Convert.ToInt32(cartas[2]))
+            {
+                Carta Carta = new Carta(Convert.ToInt32(cartas[i + 3]));
+                DelegadoParaCartas delegado = new DelegadoParaCartas(MuestraCarta);
+                Invoke(delegado, new object[] { Carta });
+                i++;
+            }
+            Carta carta = new Carta(Convert.ToInt32(cartas[i + 2]));
+            DelegadoParaCartas Delegado = new DelegadoParaCartas(MuestraMisCartas);
+            Invoke(Delegado, new object[] { carta });
+            Delegado = new DelegadoParaCartas(AñadeCheckBoxes);
+            Invoke(Delegado, new object[] { carta });
+        }
+        private void  MuestraCarta(Carta carta)
+        {
+            
+            PictureBox pic = carta.DamePic();
+            pic.Width = 300;
+            pic.Height = 500;
+            pic.ClientSize = new Size(300, 500);
+            pic.SizeMode = PictureBoxSizeMode.StretchImage;
+            pic.Location = new Point(Width / 3 + 100, Height/4 -50 );
+            pic.BringToFront();
+            Controls.Add(pic);
+            wait(3000);
+            Controls.Remove(pic);
+        }
+
+        public void wait(int milliseconds)
+        {
+            System.Windows.Forms.Timer timer1 = new System.Windows.Forms.Timer();
+            if (milliseconds == 0 || milliseconds < 0) return;
+            //Console.WriteLine("start wait timer");
+            timer1.Interval = milliseconds;
+            timer1.Enabled = true;
+            timer1.Start();
+            timer1.Tick += (s, e) =>
+            {
+                timer1.Enabled = false;
+                timer1.Stop();
+                //Console.WriteLine("stop wait timer");
+            };
+            while (timer1.Enabled)
+            {
+                Application.DoEvents();
+            }
+        }
+        private void MuestraMisCartas( Carta carta)
+        {
+            int i = 0;
+            foreach (Carta p in MisCartas)
+            {
+                PictureBox pic = p.DamePic();
+                pic.Width = 175;
+                pic.Height = 250;
+                pic.Tag = p.GetNum();
+                pic.ClientSize = new Size(175, 250);
+                pic.SizeMode = PictureBoxSizeMode.StretchImage;
+                if (i < 3)
+                    pic.Location = new Point(545 + i * 185, 40);
+                else
+                    pic.Location = new Point(545 + (i-3) * 185, 270);
+                pic.BringToFront();
+                pic.Click += new EventHandler(Pic_Click) ;
+                Controls.Add(pic);
+                i++;
+            }
+            Label cartasLBL = new Label();
+            cartasLBL.Location = new Point(545, 10);
+            cartasLBL.Text = "Mis Cartas: ";
+            cartasLBL.Font = new Font("Mongolian Baiti", 20);
+            cartasLBL.BringToFront();
+            Controls.Add(cartasLBL);
+        }
+
+        private void Pic_Click(object sender, EventArgs e)
+        {
+            PictureBox pic = (PictureBox)sender;
+            int j = (int)pic.Tag;
+            
+        }
+        private void AñadeCheckBoxes(Carta Carta)
+        {
+            Label Asesinos = new Label();
+            Asesinos.Location = new Point(1185, 40);
+            Asesinos.Text = "Asesinos";
+            Asesinos.Font = new Font("Mongolian Baiti", 12);
+            Asesinos.ForeColor = Color.White;
+            Controls.Add(Asesinos);
+            for (int i = 0; i < 6; i++)
+            {
+                Carta carta = new Carta(i);
+                CheckBox dynamicCheckBox = new CheckBox();
+                dynamicCheckBox.Location = new Point(1185, 65 +25 * i);
+         
+                
+                dynamicCheckBox.Width = 300;
+                dynamicCheckBox.Height = 30;
+
+                // Set background and foreground  
+               
+                dynamicCheckBox.ForeColor = Color.White;
+                dynamicCheckBox.Text = carta.GetNombre();
+                dynamicCheckBox.Name = carta.GetNombre();
+                dynamicCheckBox.Font = new Font("Mongolian Baiti", 12);
+
+                Controls.Add(dynamicCheckBox);
+            }
+            Label Armas = new Label();
+            Armas.Location = new Point(1185, 240);
+            Armas.Text = "Armas";
+            Armas.Font = new Font("Mongolian Baiti", 12);
+            Armas.ForeColor = Color.White;
+            Controls.Add(Armas);
+
+            for (int i = 6; i < 14; i++)
+            {
+                Carta carta = new Carta(i);
+                CheckBox dynamicCheckBox = new CheckBox();
+                dynamicCheckBox.Location = new Point(1185, 65 + 25 * (i+2));
+
+                dynamicCheckBox.Width = 300;
+                dynamicCheckBox.Height = 30;
+
+                // Set background and foreground  
+
+                dynamicCheckBox.ForeColor = Color.White;
+                dynamicCheckBox.Text = carta.GetNombre();
+                dynamicCheckBox.Name = carta.GetNombre();
+                dynamicCheckBox.Font = new Font("Mongolian Baiti", 12);
+
+                Controls.Add(dynamicCheckBox);
+            }
+            Label Lugares = new Label();
+            Lugares.Location = new Point(1185, 490);
+            Lugares.Text = "Lugares";
+            Lugares.Font = new Font("Mongolian Baiti", 12);
+            Lugares.ForeColor = Color.White;
+            Controls.Add(Lugares);
+            for (int i = 14; i < 20; i++)
+            {
+                Carta carta = new Carta(i);
+                CheckBox dynamicCheckBox = new CheckBox();
+                dynamicCheckBox.Location = new Point(1185, 65 + 25 * (i + 4));
+
+                dynamicCheckBox.Width = 300;
+                dynamicCheckBox.Height = 30;
+
+                // Set background and foreground  
+
+                dynamicCheckBox.ForeColor = Color.White;
+                dynamicCheckBox.Text = carta.GetNombre();
+                dynamicCheckBox.Name = carta.GetNombre();
+                dynamicCheckBox.Font = new Font("Mongolian Baiti", 12);
+
+                Controls.Add(dynamicCheckBox);
+            }
+            listBox1.Visible = true;
+            listBox2.Visible = true;
+            Chat.Visible = true;
+            MensajeBox.Visible = true;
+            btn_chat.Visible = true;
+            Dado_btn.Visible = true;
+        }
+
+        private void Dado_btn_Click(object sender, EventArgs e)
+        {
+            if (sesion == turno)
+            {
+                
+                Random random = new Random();
+                for (int i = 0; i < 10; i++)
+                {
+                    dado = random.Next(1, 7);
+                    switch (dado)
+                    {
+                        // No implementado aún
+                    }
+                    Dado_btn.Text = dado.ToString();
+                    wait(300);
+                }
+                Dado_btn.Enabled = false;
+            }
+        }
+        private int DameJugador(string nombre)
+        {
+            int i = 0;
+            Boolean Encontrado = false;
+            while (i < Jugadores.Count && !Encontrado)
+            {
+                if (Jugadores[i].GetNombre() == nombre)
+                {
+                    Encontrado = true;
+                }
+                else
+                    i++;
+            }
+            if (Encontrado)
+                return i;
+            else
+                return -1;
+        }
+        public void DameMovimiento(string[] trozos)
+        {
+            
+            Delegado delegado = new Delegado(MoverFicha);
+            Invoke(delegado, new object[] { trozos });
+        }
+        public void MoverFicha(string[] trozos)
+        {
+            Point Nuevo = new Point(Convert.ToInt32(trozos[3]), Convert.ToInt32(trozos[4]));
+            int i = DameJugador(trozos[2]);
+            Jugadores[i].RefreshLocation(Nuevo);
+            cola.Enqueue(turno);
+            turno = cola.Dequeue();
+            if (turno == sesion)
+            {
+                dado = 0;
+                Dado_btn.Enabled = true;
+            }
+        }
+        private Boolean CasillaLibre(Point Punto)
+        {
+            Boolean Libre = true;
+            int i = 0;
+            while (i<Jugadores.Count && Libre)
+            {
+                if (Jugadores[i].GetPoint() == Punto)
+                    Libre = false;
+                else
+                    i++;
+            }
+            return Libre;
+        }
+        public void DameAcusacion(string[] trozos)
+        {
+            Delegado delegado = new Delegado(Acusar);
+            Invoke(delegado, new object[] { trozos });
+        }
+        public void Acusar(string[] trozos)
+        {
+            string nombre = trozos[2];
+            Carta asesino = new Carta(Convert.ToInt32(trozos[5]));
+            Carta arma = new Carta(Convert.ToInt32(trozos[6]));
+            Carta lugar = new Carta(Convert.ToInt32(trozos[7]));
+            string mensaje = nombre + " ha hecho la siguiente acusación: Asesino: " + asesino.GetNombre() + " Arma: " + arma.GetNombre() + " Lugar: " + lugar.GetNombre();
+            EscribeMensaje(mensaje);
+            Chat.BackColor = Color.Red;
+            Boolean Hay = HayCartas(asesino, arma, lugar);
+            if (!Hay)
+            {
+                string Mensaje = "12/"+IDp+"/"+sesion;
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                server.Send(msg);
+            }
+            else
+            {
+                Acusacion Form = new Acusacion();
+                List<Carta> cartas1 = DameLista(asesino, arma, lugar);
+                Form.GetLista(cartas1);
+                Form.ShowDialog();
+                int numero = Form.GiveNum();
+                string Mensaje = "13/" + IDp + "/" + sesion + "/" + numero;
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                server.Send(msg);
+            }
+        }
+
+        private Boolean HayCartas(Carta asesino,Carta arma, Carta lugar)
+        {
+            int i = 0;
+            Boolean encontrado = false;
+            while (i<MisCartas.Count && !encontrado)
+            {
+                if (MisCartas[i].GetNombre() == asesino.GetNombre() || MisCartas[i].GetNombre() == arma.GetNombre() || MisCartas[i].GetNombre() == lugar.GetNombre())
+                    encontrado = true;
+                else 
+                    i++;
+            }
+            return encontrado;
+        }
+        private List<Carta> DameLista (Carta asesino, Carta arma, Carta lugar)
+        {
+            List<Carta> cartas1 = new List<Carta>();
+            int i = 0;
+            while (i < MisCartas.Count )
+            {
+                if (MisCartas[i].GetNombre() == asesino.GetNombre() || MisCartas[i].GetNombre() == arma.GetNombre() || MisCartas[i].GetNombre() == lugar.GetNombre())
+                {
+                    cartas1.Add(MisCartas[i]);
+                }
+
+                i++;
+            }
+            return cartas1;
+        }
+        public void acabaAcusacion(string letra)
+        {
+            DelegadoParaEscribirMensaje delegado = new DelegadoParaEscribirMensaje(AcabaAcuascion);
+            Invoke(delegado, new object[] { letra });
+        }
+        public void AcabaAcuascion(string letra)
+        {
+            Chat.BackColor = Color.Snow;
         }
     }
 }

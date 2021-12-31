@@ -8,6 +8,8 @@
 #include <mysql.h>
 #include <pthread.h>
 #include<time.h>
+#include<stdio.h>
+#include<stdlib.h>
 
 //Estructuras para la lista de conectados
 typedef struct{
@@ -22,9 +24,19 @@ typedef struct{
 	int avatares;
 }ListaConectados;
 typedef struct{
+	Conectado Conectado;
+	int carta;
+}Acusacion;
+typedef struct{
+	Acusacion Acusados[100];
+	int num;
+	int socket;
+}ListaAcusaciones;
+typedef struct{
 	int ocupado;
 	int invitaciones;
 	ListaConectados Jugadores;
+	ListaAcusaciones Acusaciones;
 }Partida;
 typedef Partida TPartidas[100];
 
@@ -32,6 +44,10 @@ void inicializar(TPartidas tabla){
 	int i;
 	for(i=0; i<100; i++)
 		tabla[i].ocupado = 0;
+}
+void InciarAcusacion(TPartidas tabla,int Id, int socket){
+	tabla[Id].Acusaciones.num=0;
+	tabla[Id].Acusaciones.socket=socket;
 }
 //Estructuras y funciones para la baraja
 int Baraja[20];
@@ -42,9 +58,8 @@ void InicializarBaraja(int baraja[20]){
 		i++;
 	}
 }
-
-void RepartirCartas(Partida *partida){
-	int cont=20;
+int RepartirCartasGanadoras(Partida *partida, int cont,int Id){
+	
 	srand(time(0));
 	int i = rand() %6; // Personas
 	int j = rand() %8; //Armas
@@ -53,7 +68,7 @@ void RepartirCartas(Partida *partida){
 	k=k+14;
 	printf("i=%d,j=%d,k=%d",i,j,k);
 	char Combinacion[100];
-	sprintf(Combinacion,"11/%d/%d/%d",i,j,k);
+	sprintf(Combinacion,"11/%d/%d/%d/%d",Id,i,j,k);
 	printf("Combinacion ganadora : %s\n",Combinacion);
 	for (int p=0; p<partida->Jugadores.num;p++){
 		write(partida->Jugadores.conectados[p].socket,Combinacion,strlen(Combinacion));
@@ -61,8 +76,9 @@ void RepartirCartas(Partida *partida){
 	cont = SacarCartas(Baraja,i,cont);
 	cont = SacarCartas(Baraja,j-1,cont);
 	cont = SacarCartas(Baraja,k-2,cont);
-	
-	sleep(1);	
+
+}
+int RepartirCartasPersonales(Partida *partida, int cont, int Id){
 	int jug = partida->Jugadores.num;
 	div_t resultadoDeLaDivision=div(17,jug);
 	int cartas = resultadoDeLaDivision.quot; 
@@ -71,8 +87,9 @@ void RepartirCartas(Partida *partida){
 	for(int p=0;p<jug;p++){
 		char mano[100];
 		bzero(mano, 100);
+		int i;
 		for (int n=0;n<cartas;n++){
-			i = rand() %(cont-1);
+			i = rand() %(cont);
 			printf("i=%d\n",i);
 			sprintf(mano,"%s/%d",mano,Baraja[i]);
 			printf("mensaje: %s\n",mano);
@@ -81,11 +98,12 @@ void RepartirCartas(Partida *partida){
 		}
 		char mensaje[200];
 		bzero(mensaje,200);
-		sprintf(mensaje,"12/%d%s",cartas,mano);
+		sprintf(mensaje,"12/%d/%d%s",Id,cartas,mano);
 		printf("Cartas de un jugador: %s\n",mensaje);
 		write(partida->Jugadores.conectados[p].socket,mensaje,strlen(mensaje));
 	}
-	sleep(1);
+}
+int RepartirCartasSobrantes(Partida *partida, int cont, int Id){
 	int n=0;
 	int sum=0;
 	char sobrantes[200];
@@ -97,10 +115,10 @@ void RepartirCartas(Partida *partida){
 	}
 	char sobran[100];
 	
-	sprintf(sobran,"13/%d%s",sum,sobrantes);
+	sprintf(sobran,"13/%d/%d%s",Id,sum,sobrantes);
 	printf("sobrantes: %s\n",sobran);
-	for (int p=0;p< partida->Jugadores.num;p++){
-		write(partida->Jugadores.conectados[p].socket,sobran,strlen(sobran));
+	for (int f=0;f< partida->Jugadores.num;f++){
+		write(partida->Jugadores.conectados[f].socket,sobran,strlen(sobran));
 	}
 	
 }
@@ -312,6 +330,70 @@ void EnviarAvatar(int Id,char sesion[20],char avatar[20]){
 		i=i+1;
 	}
 }
+void EnviarMovimiento(int Id,char sesion[20],int x,int y,int socket){
+	char notificacion[200];
+	sprintf(notificacion,"14/%d/%s/%d/%d",Id,sesion,x,y);
+	printf("%s\n",notificacion);
+	int i=0;
+	while(i<tabla[Id].Jugadores.num){
+		if(tabla[Id].Jugadores.conectados[i].socket!=socket){
+			write (tabla[Id].Jugadores.conectados[i].socket,notificacion, strlen(notificacion));
+		}
+		i=i+1;
+	}
+	
+}
+void EnviarAcusacion(int Id,char sesion[20],int x,int y,int socket,int asesino,int arma,int lugar){
+	char notificacion[200];
+	sprintf(notificacion,"15/%d/%s/%d/%d/%d/%d/%d",Id,sesion,x,y,asesino,arma,lugar);
+	printf("%s\n",notificacion);
+	int i=0;
+	while(i<tabla[Id].Jugadores.num){
+		if(tabla[Id].Jugadores.conectados[i].socket!=socket){
+			write (tabla[Id].Jugadores.conectados[i].socket,notificacion, strlen(notificacion));
+		}
+		i=i+1;
+	}
+}
+void ResponderAcusacion(ListaAcusaciones *lista,int Id){
+	char Notificacion[200];
+	char Notificacion2[200];
+	sprintf(Notificacion,"16/%d",Id);
+	sprintf(Notificacion2,"17/%d",Id);
+	int i=0;
+	while (i<lista->num){
+		sprintf(Notificacion,"%s/%s/%d",Notificacion,lista->Acusados[i].Conectado.nombre,lista->Acusados[i].carta);
+		sprintf(Notificacion2,"%s/%s/%d",Notificacion2,lista->Acusados[i].Conectado.nombre,lista->Acusados[i].carta);
+		i=i+1;
+	}
+	printf("Respuesta Acusacion:  %s\n",Notificacion);
+	i=0;
+	while(i<tabla[Id].Jugadores.num){
+		if(lista->socket!=tabla[Id].Jugadores.conectados[i].socket){
+			write (tabla[Id].Jugadores.conectados[i].socket,Notificacion, strlen(Notificacion));
+		}
+		else
+		   write (tabla[Id].Jugadores.conectados[i].socket,Notificacion2, strlen(Notificacion2));
+		i=i+1;
+	}
+}
+
+//Funciones para trabajr sobre las listas de Acusaciones
+void AnadirRespuestaAcusacion( ListaAcusaciones *lista, char nombre[60], int socket,int carta){
+	
+	if (lista->num == 100)
+	{		
+		return -1;
+	}
+	else{
+		strcpy(lista->Acusados[lista->num].Conectado.nombre,nombre);
+		lista->Acusados[lista->num].Conectado.socket = socket;
+		lista->Acusados[lista->num].carta=carta;
+		lista->num++;
+		return 0;
+	}
+	
+}
 
 
 //Thread para atender peticiones de los clientes
@@ -354,7 +436,7 @@ void *AtenderCliente(void *socket) {
 		if (codigo==0){
 			terminar=1;
 		}
-		if (codigo==1){
+		else if (codigo==1){
 			
 			char contra[60];
 			
@@ -400,7 +482,7 @@ void *AtenderCliente(void *socket) {
 			
 			
 		}
-		if (codigo==2){
+		else if (codigo==2){
 			
 			char contra[60];
 			
@@ -443,7 +525,7 @@ void *AtenderCliente(void *socket) {
 			}
 			
 		}
-		if (codigo==3){
+		else if (codigo==3){
 			char nombre[60];
 			
 			p=strtok(NULL,"/");
@@ -460,7 +542,7 @@ void *AtenderCliente(void *socket) {
 				write (sock_conn,respuesta, strlen(respuesta));
 			
 		}
-		if (codigo==4){
+		else if (codigo==4){
 			char nombre[60];
 			
 			p=strtok(NULL,"/");
@@ -469,7 +551,7 @@ void *AtenderCliente(void *socket) {
 			write (sock_conn,respuesta, strlen(respuesta));
 			
 		}
-		if (codigo==5){
+		else if (codigo==5){
 			char identificador[60];
 			char nombre[60];
 			p=strtok(NULL,"/");
@@ -478,7 +560,7 @@ void *AtenderCliente(void *socket) {
 			write (sock_conn,nombre, strlen(nombre));
 			
 		}
-		if (codigo==6){
+		else if (codigo==6){
 			int invitaciones=0;
 			int puesta=0;
 			int i=0;
@@ -510,7 +592,7 @@ void *AtenderCliente(void *socket) {
 			}
 			
 		}
-		if (codigo==7){
+		else if (codigo==7){
 			p=strtok(NULL,"/");
 			char respuesta[20];
 			strcpy(respuesta,p);
@@ -536,7 +618,7 @@ void *AtenderCliente(void *socket) {
 				EmpezarPartida(Id);
 			}
 		}
-		if (codigo==8){
+		else if (codigo==8){
 
 			p=strtok(NULL,"/");
 			int ID=atoi(p);
@@ -549,7 +631,7 @@ void *AtenderCliente(void *socket) {
 		
 			EnviarMensaje(ID,nombre,mensaje);
 		}
-		if(codigo==9){
+		else if(codigo==9){
 			p=strtok(NULL,"/");
 			char avatar[20];
 			strcpy(avatar,p);
@@ -564,10 +646,86 @@ void *AtenderCliente(void *socket) {
 			EnviarAvatar(Id,sesion,avatar);
 			
 			if(tabla[Id].Jugadores.avatares==tabla[Id].Jugadores.num){
+				int cont = 20;
+				pthread_mutex_lock(&mutex);
 				InicializarBaraja(Baraja);
-				RepartirCartas(&tabla[Id]);
+				cont = RepartirCartasGanadoras(&tabla[Id],cont,Id);
+				pthread_mutex_unlock(&mutex);
+				sleep(1);
+				pthread_mutex_lock(&mutex);
+				cont = RepartirCartasPersonales(&tabla[Id],cont,Id);
+				pthread_mutex_unlock(&mutex);
+				sleep(1);
+				pthread_mutex_lock(&mutex);
+				cont = RepartirCartasSobrantes(&tabla[Id],cont,Id);
+				pthread_mutex_unlock(&mutex);
 			}
 			
+		}
+		else if(codigo==10){
+			p=strtok(NULL,"/");
+			int ID=atoi(p);
+			p=strtok(NULL,"/");
+			char sesion[20];
+			strcpy(sesion,p);
+			p=strtok(NULL,"/");
+			int x=atoi(p);
+			p=strtok(NULL,"/");
+			int y=atoi(p);
+			EnviarMovimiento(ID, sesion,x,y,sock_conn);
+		}
+		else if (codigo==11){
+			p=strtok(NULL,"/");
+			int ID=atoi(p);
+			pthread_mutex_lock(&mutex);
+			InciarAcusacion(tabla,ID,sock_conn);
+			pthread_mutex_unlock(&mutex);
+			p=strtok(NULL,"/");
+			char sesion[20];
+			strcpy(sesion,p);
+			p=strtok(NULL,"/");
+			int x=atoi(p);
+			p=strtok(NULL,"/");
+			int y=atoi(p);
+			p=strtok(NULL,"/");
+			int asesino=atoi(p);
+			p=strtok(NULL,"/");
+			int arma=atoi(p);
+			p=strtok(NULL,"/");
+			int lugar =atoi(p);
+			EnviarAcusacion(ID,sesion,x,y,sock_conn,asesino,arma,lugar);
+		}
+		else if (codigo==12){
+			p=strtok(NULL,"/");
+			int Id =atoi(p);
+			p=strtok(NULL,"/");
+			char nombre[20];
+			strcpy(nombre,p);
+			int  carta = -1;
+			pthread_mutex_lock(&mutex);
+			AnadirRespuestaAcusacion(&tabla[Id].Acusaciones,nombre,sock_conn,carta);
+			pthread_mutex_unlock(&mutex);
+			if(tabla[Id].Acusaciones.num==(tabla[Id].Jugadores.num-1)){
+				ResponderAcusacion(&tabla[Id].Acusaciones,Id);
+			}
+			
+		}
+		else  if (codigo==13){
+			p=strtok(NULL,"/");
+			int Id =atoi(p);
+			p=strtok(NULL,"/");
+			char nombre[20];
+			strcpy(nombre,p);
+			p=strtok(NULL,"/");
+			int carta=atoi(p);
+			pthread_mutex_lock(&mutex);
+			AnadirRespuestaAcusacion(&tabla[Id].Acusaciones,nombre,sock_conn,carta);
+			pthread_mutex_unlock(&mutex);
+			printf("Numero Lista Acusados: %d\n",tabla[Id].Acusaciones.num);
+			printf("Numero Lista Conectados:  %d\n",(tabla[Id].Jugadores.num-1));
+			if(tabla[Id].Acusaciones.num==(tabla[Id].Jugadores.num-1)){
+				ResponderAcusacion(&tabla[Id].Acusaciones,Id);
+			}
 		}
 		
 	

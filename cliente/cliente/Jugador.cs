@@ -16,19 +16,17 @@ namespace cliente
     {
         string nombre;
         string avatar;
-        int x;
-        int y;
-        PictureBox pic;
-        
-        public void RefreshLocation()
-        {
-            
-            pic.Width = 20;
-            pic.Height = 20;
-            pic.ClientSize = new Size(20, 20);
 
-            pic.Location = new Point(x,y);
-            pic.SizeMode = PictureBoxSizeMode.StretchImage;
+        PictureBox pic;
+        Point Posicion;
+        
+        public void RefreshLocation(Point Nueva)
+        {
+
+            pic.Location =new Point (Nueva.X+25/2,Nueva.Y+25/2);
+            Posicion = Nueva;
+            pic.Refresh();
+            
         }
         public Jugador(string nombre,string avatar)
         {
@@ -38,80 +36,78 @@ namespace cliente
             pic.Width = 30;
             pic.Height = 30;
             pic.ClientSize = new Size(30, 30);
-            
             switch (avatar)
             {
                 case "aza":
-                    setX(185);
-                    setY(35);
-                    pic.BackColor = Color.Red;
-                    pic.Location = new Point(185,35);
+                    Posicion= new Point(175, 25);
+                    pic.Image =new Bitmap("fichaaza.png");
+                    pic.BackColor = Color.IndianRed;
+                    pic.Location = new Point(Posicion.X+25/2,Posicion.Y+25/2);
                     
                     break;
                 case "guillem":
-                    setX(35);
-                    setY(185);
-                    pic.BackColor = Color.LightGoldenrodYellow;
-                    pic.Location = new Point(35, 185);
+                    Posicion = new Point(25, 175);
+                    pic.Image = new Bitmap("fichaguillem.png");
+                    pic.BackColor = Color.Aquamarine;
+                    pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); 
 
                     break;
                 case "ismael":
-                    setX(335);
-                    setY(635);
-                    pic.BackColor = Color.Green;
-                    pic.Location = new Point(335, 635);
+                    Posicion = new Point(325, 625);
+                    pic.Image = new Bitmap("fichaisma.png");
+                    pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); 
 
                     break;
                 case "itziar":
-                    setX(35);
-                    setY(485);
-                    pic.BackColor = Color.DarkViolet;
-                    pic.Location = new Point(35,485);
+                    Posicion= new Point(25, 475);
+                    pic.Image = new Bitmap("fichaitzi.png");
+                    pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); 
 
                     break;
                 case "pedro":
-                    setX(485);
-                    setY(185);
-                    pic.BackColor = Color.HotPink;
-                    pic.Location = new Point(485, 185);
+                    Posicion = new Point(475, 175);
+                    pic.Image = new Bitmap("fichapedro.png");
+                    pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); 
 
                     break;
                 case "victor":
-                    setX(485);
-                    setY(485);
-                    pic.BackColor = Color.Blue;
-                    pic.Location = new Point(485, 485);
+                    Posicion= new Point(475, 475);
+                    pic.Image = new Bitmap("fichavictor.png");
+                    pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); ;
                     break;
             }
+            pic.SizeMode = PictureBoxSizeMode.StretchImage;
+            
 
         }
         public string GetNombre()
         {
             return this.nombre;
         }
+        public void SetNombre(string nombre)
+        {
+            this.nombre = nombre;
+        }
         public string GetAvatar()
         {
             return this.avatar;
         }
-        public int GetX()
+        public void SetAvatar(string avatar)
         {
-            return x;
+            this.avatar = avatar;
         }
-        public  int GetY()
-        {
-            return y;
-        }
-        public void setX(int x)
-        {
-            this.x = x;
-        }
-        public void setY(int y)
-        {
-            this.y = y;
-        }
+        
         public PictureBox GetPictureBox()
         {
             return pic;
+        }
+        public void SetPictureBox(Point Punto)
+        {
+            pic.Location = new Point(Punto.X + 25 / 2, Punto.Y + 25 / 2);
+        }
+        public Point GetPoint()
+        {
+            return Posicion;
         }
     }
 }

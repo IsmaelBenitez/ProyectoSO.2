@@ -40,3 +40,4 @@ C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.csproj.GenerateResource.
 C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.csproj.CoreCompileInputs.cache
 C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.exe
 C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.pdb
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.Acusacion.resources

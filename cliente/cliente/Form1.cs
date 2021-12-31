@@ -457,24 +457,110 @@ namespace cliente
                             break;
                         case 11:
                             //Llega la combinacion ganadora Asesino/Arma/Lugar
-                            MessageBox.Show(trozos[1]+" "+trozos[2]+ " " + trozos[3] );
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
+                            {
+                                formularios[i].CartasGanadoras(trozos);
+                            }
+
                             break;
                         case 12:
                             //Llegan tus cartas
-                            MessageBox.Show(trozos[1]);
-                            string cartas=string.Empty;
-                            for(i=0; i < Convert.ToInt32(trozos[1]); i++)
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
                             {
-                                cartas = $"{cartas}{trozos[i + 2]}";
+                                formularios[i].CartasPersonales(trozos);
                             }
-                           
-                            MessageBox.Show(cartas);
-                            
+
                             break;
                         case 13:
-                            MessageBox.Show(trozos[1]);
-                            MessageBox.Show(trozos[2]);
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
+                            {
+                                formularios[i].CartasSobrantes(trozos);
+                            }
                             break;
+                        case 14:
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
+                            {
+                                formularios[i].DameMovimiento(trozos);
+                            }
+                            break;
+                        case 15:
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
+                            {
+                                formularios[i].DameMovimiento(trozos);
+                                formularios[i].DameAcusacion(trozos);
+                            }
+                            break;
+                        case 16:
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
+                            {
+                                j = 1;
+                                
+                                    
+                                while (2*j < trozos.Count())
+                                {
+                                    string texto;
+                                    if (Convert.ToInt32(trozos[2 * j + 1]) == -1)
+                                    {
+                                        texto = trozos[2 * j] + " no enseña ninguna carta";
+                                        formularios[i].RecibirMensaje(texto);
+
+                                    }
+                                    else
+                                    {
+                                        texto = trozos[2 * j] + " enseña una carta";
+                                        formularios[i].RecibirMensaje(texto);
+                                        break;
+                                    }
+                                    
+                                    j++;
+                                }
+                                formularios[i].acabaAcusacion("a");
+                            }
+                            break;
+                        case 17:
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
+                            {
+                                j = 1;
+
+
+                                while (2 * j < trozos.Count())
+                                {
+                                    string texto;
+                                    if (Convert.ToInt32(trozos[2 * j + 1]) == -1)
+                                    {
+                                        texto = trozos[2 * j] + " no enseña ninguna carta";
+                                        formularios[i].RecibirMensaje(texto);
+
+                                    }
+                                    else
+                                    {
+                                        Carta carta = new Carta(Convert.ToInt32(trozos[2 * j + 1]));
+                                        texto = trozos[2 * j] + " enseña la carta: "+carta.GetNombre();
+                                        formularios[i].RecibirMensaje(texto);
+                                        break;
+                                    }
+
+                                    j++;
+                                }
+                                formularios[i].acabaAcusacion("a");
+                            }
+                            break;
+
+
                     }
                 }
                 catch (System.FormatException)
@@ -506,15 +592,12 @@ namespace cliente
                 }
                 else
                 {
-                    //if (Grid[0, j].Value.ToString() != sesion)
-                    //{
-                    //    Invitados[invitados] = Grid[0, j].Value.ToString();
-                    //    Grid.Rows[j].Cells[0].Style.BackColor = Color.Green;
-                    //    invitados++;
-                    //}
-                    Invitados[invitados] = Grid[0, j].Value.ToString();
-                    Grid.Rows[j].Cells[0].Style.BackColor = Color.Green;
-                    invitados++;
+                    if (Grid[0, j].Value.ToString() != sesion)
+                    {
+                        Invitados[invitados] = Grid[0, j].Value.ToString();
+                        Grid.Rows[j].Cells[0].Style.BackColor = Color.Green;
+                        invitados++;
+                    }
                 }
             }
 
@@ -532,7 +615,7 @@ namespace cliente
                     int j = i;
                     while (j < invitados - 1)
                     {
-                        Invitados[j] = Invitados[j - 1];
+                        Invitados[j] = Invitados[j+1];
                         j = j + 1;
                     }
                     invitados--;
