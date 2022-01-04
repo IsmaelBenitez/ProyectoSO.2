@@ -40,7 +40,13 @@ typedef struct{
 	ListaAcusaciones Acusaciones;
 }Partida;
 typedef Partida TPartidas[100];
-
+//Variables Globales.
+MYSQL *conn; // Connector con el serivdor de MYSQL
+ListaConectados Lista; // Lista de conectados
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;//Estructura para la implementación de exclusin mutua
+TPartidas tabla;
+int Baraja[20];
+//Funciones para inicializar
 void inicializar(TPartidas tabla){
 	int i;
 	for(i=0; i<100; i++)
@@ -50,8 +56,6 @@ void InciarAcusacion(TPartidas tabla,int Id, int socket){
 	tabla[Id].Acusaciones.num=0;
 	tabla[Id].Acusaciones.socket=socket;
 }
-//Estructuras y funciones para la baraja
-int Baraja[20];
 void InicializarBaraja(int baraja[20]){
 	int i=0;
 	while (i<21){
@@ -59,6 +63,7 @@ void InicializarBaraja(int baraja[20]){
 		i++;
 	}
 }
+//Estructuras y funciones para la baraja
 int RepartirCartasGanadoras(Partida *partida, int cont,int Id){
 	
 	srand(time(0));
@@ -134,12 +139,6 @@ int SacarCartas(int baraja[20],int i,int cont){
 	return cont;
 	
 }
-// Variable globales:
-MYSQL *conn; // Connector con el serivdor de MYSQL
-ListaConectados Lista; // Lista de conectados
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;//Estructura para la implementación de exclusin mutua
-TPartidas tabla;
-
 
 //Funciones para actuar sobre la lista de conectados
 int AnadirConectado (ListaConectados *lista, char nombre[60], int socket){
@@ -383,9 +382,9 @@ void ResponderAcusacion(ListaAcusaciones *lista,int Id){
 		i=i+1;
 	}
 }
-void EnviarSalirPartida(int Id,char sesion[20],int socket){
+void EnviarSalirPartida(int Id,char sesion[20],int socket,char cartas[200],int cont){
 	char Notificacion[200];
-	sprintf(Notificacion,"18/%d/%s",Id,sesion);
+	sprintf(Notificacion,"18/%d/%s/%d%s",Id,sesion,cont,cartas);
 	for(int i=0;i<tabla[Id].Jugadores.num;i++){
 		if(tabla[Id].Jugadores.conectados[i].socket!=socket){
 			write (tabla[Id].Jugadores.conectados[i].socket,Notificacion, strlen(Notificacion));
@@ -766,7 +765,18 @@ void *AtenderCliente(void *socket) {
 			pthread_mutex_lock(&mutex);
 			Elimina(&tabla[Id].Jugadores,sesion);
 			pthread_mutex_unlock(&mutex);
-			EnviarSalirPartida(Id,sesion,sock_conn);
+			int cont =0 ;
+			p=strtok(NULL,"/");
+			char hey[200];
+			bzero(hey,100);
+			printf("cartas: %s\n",hey);
+			while(p!=NULL){
+				sprintf(hey,"%s/%s",hey,p);
+				p=strtok(NULL,"/");
+				cont=cont+1;
+			}
+			printf("cartas: %s\n",hey);
+			EnviarSalirPartida(Id,sesion,sock_conn,hey,cont);
 			
 		}
 		else if(codigo==15){
@@ -775,10 +785,13 @@ void *AtenderCliente(void *socket) {
 			p=strtok(NULL,"/");
 			char sesion[20];
 			strcpy(sesion,p);
+			p=strtok(NULL,"/");
+			int tiempo=atoi(p);
 			pthread_mutex_lock(&mutex);
 			EnviarGanador(Id,sesion,sock_conn);
 			EliminarTodos(&tabla[Id].Jugadores);
 			PonGanador(Id,sesion);
+			PonDuracion(Id,tiempo);
 			pthread_mutex_unlock(&mutex);
 						
 		}
@@ -1043,9 +1056,11 @@ int DameID(){
 	row = mysql_fetch_row (resultado);
 	if (row == NULL){
 		printf ("No se han obtenido datos en la consulta\n");
+		return -1;
 	}
 	else{
-		return atoi(row[0])+1;
+		int k = atoi(row[0])+1;
+		return k;
 	}
 }
 int DameIDJ(char sesion[20]){
@@ -1088,11 +1103,6 @@ void PonPartida(int Id){
 				mysql_errno(conn), mysql_error(conn));
 		exit (1);
 	}
-	resultado = mysql_store_result (conn);
-	row = mysql_fetch_row (resultado);
-	if (row == NULL){
-		printf ("No se han obtenido datos en la consulta\n");
-	}
 }
 void PonParticipacion(int Id ,char sesion[20],char avatar[20]){
 	int err;
@@ -1103,20 +1113,16 @@ void PonParticipacion(int Id ,char sesion[20],char avatar[20]){
 	
 	char consulta[500];
 	
-	sprintf(consulta,"INSERT INTO Participacion VALUES(%d,%d,%s)",IDJ,tabla[Id].BBDD,avatar);
+	sprintf(consulta,"INSERT INTO Participacion VALUES(%d,%d,'%s')",IDJ,tabla[Id].BBDD,avatar);
 	err=mysql_query (conn, consulta);
 	if (err!=0) {
 		printf ("Error al consultar datos de la base %u %s\n",
 				mysql_errno(conn), mysql_error(conn));
 		exit (1);
 	}
-	resultado = mysql_store_result (conn);
-	row = mysql_fetch_row (resultado);
-	if (row == NULL){
-		printf ("No se han obtenido datos en la consulta\n");
-	}
-	
 }
+	
+
 void PonGanador(int Id,char sesion[20]){
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
@@ -1124,18 +1130,27 @@ void PonGanador(int Id,char sesion[20]){
 	MYSQL_ROW row;
 	
 	char consulta[500];
-	
-	sprintf(consulta, "UPDATE Partida SET Partida.Ganador = '%s' WHERE Identificador= %d",sesion,tabla[Id].BBDD);
+	int IDJ=DameIDJ(sesion);
+	sprintf(consulta, "UPDATE Partida SET Partida.Ganador = %d WHERE Identificador= %d",IDJ,tabla[Id].BBDD);
 	err=mysql_query (conn, consulta);
 	if (err!=0) {
 		printf ("Error al consultar datos de la base %u %s\n",
 				mysql_errno(conn), mysql_error(conn));
 		exit (1);
 	}
-	resultado = mysql_store_result (conn);
-	row = mysql_fetch_row (resultado);
-	if (row == NULL){
-		printf ("No se han obtenido datos en la consulta\n");
+}
+void PonDuracion(int Id,int tiempo){
+	int err;
+	// Estructura especial para almacenar resultados de consultas 
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	char consulta2[500];
+	sprintf(consulta2, "UPDATE Partida SET Partida.Duracion = %d WHERE Identificador= %d",tiempo,tabla[Id].BBDD);
+	err=mysql_query (conn, consulta2);
+	if (err!=0) {
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
 	}
 }
 
@@ -1167,7 +1182,7 @@ int main(int argc, char *argv[]){
 	memset(&serv_adr, 0, sizeof(serv_adr));// inicialitza a zero serv_addr
 	serv_adr.sin_family = AF_INET;
 	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_adr.sin_port = htons(9000);
+	serv_adr.sin_port = htons(9070);
 	if (bind(sock_listen, (struct sockaddr *) &serv_adr, sizeof(serv_adr)) < 0)
 		printf ("Error al bind");
 	if (listen(sock_listen, 3) < 0)

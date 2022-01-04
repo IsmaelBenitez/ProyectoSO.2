@@ -43,6 +43,10 @@
             this.victor_btn = new System.Windows.Forms.Button();
             this.ismael_btn = new System.Windows.Forms.Button();
             this.Sol_btn = new System.Windows.Forms.Button();
+            this.turno_lbl = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.Cartas_lbl = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Chat
@@ -63,6 +67,10 @@
             this.MensajeBox.TabIndex = 27;
             this.MensajeBox.Visible = false;
             this.MensajeBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.MensajeBox_KeyPress);
+            // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // listBox2
             // 
@@ -129,7 +137,7 @@
             // 
             this.itziar_btn.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.itziar_btn.BackgroundImage = global::cliente.Properties.Resources.itziar;
-            this.itziar_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.itziar_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.itziar_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.itziar_btn.Location = new System.Drawing.Point(796, 279);
             this.itziar_btn.Name = "itziar_btn";
@@ -142,7 +150,7 @@
             // 
             this.aza_button.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.aza_button.BackgroundImage = global::cliente.Properties.Resources.azahara;
-            this.aza_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.aza_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.aza_button.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.aza_button.FlatAppearance.BorderSize = 0;
             this.aza_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -157,7 +165,7 @@
             // 
             this.pedro_btn.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.pedro_btn.BackgroundImage = global::cliente.Properties.Resources.pedro;
-            this.pedro_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pedro_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pedro_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.pedro_btn.Location = new System.Drawing.Point(977, 279);
             this.pedro_btn.Name = "pedro_btn";
@@ -170,7 +178,7 @@
             // 
             this.guillem_btn.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.guillem_btn.BackgroundImage = global::cliente.Properties.Resources.guillem;
-            this.guillem_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.guillem_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.guillem_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.guillem_btn.Location = new System.Drawing.Point(977, 12);
             this.guillem_btn.Name = "guillem_btn";
@@ -183,7 +191,7 @@
             // 
             this.victor_btn.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.victor_btn.BackgroundImage = global::cliente.Properties.Resources.victor;
-            this.victor_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.victor_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.victor_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.victor_btn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.victor_btn.Location = new System.Drawing.Point(1158, 279);
@@ -197,7 +205,7 @@
             // 
             this.ismael_btn.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ismael_btn.BackgroundImage = global::cliente.Properties.Resources.ismael;
-            this.ismael_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ismael_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ismael_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ismael_btn.Location = new System.Drawing.Point(1158, 12);
             this.ismael_btn.Name = "ismael_btn";
@@ -214,14 +222,67 @@
             this.Sol_btn.TabIndex = 42;
             this.Sol_btn.Text = "Solucionar";
             this.Sol_btn.UseVisualStyleBackColor = true;
+            this.Sol_btn.Visible = false;
             this.Sol_btn.Click += new System.EventHandler(this.Sol_btn_Click);
+            // 
+            // turno_lbl
+            // 
+            this.turno_lbl.AutoSize = true;
+            this.turno_lbl.BackColor = System.Drawing.Color.Transparent;
+            this.turno_lbl.Font = new System.Drawing.Font("Mongolian Baiti", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.turno_lbl.Location = new System.Drawing.Point(1035, 532);
+            this.turno_lbl.Name = "turno_lbl";
+            this.turno_lbl.Size = new System.Drawing.Size(52, 16);
+            this.turno_lbl.TabIndex = 43;
+            this.turno_lbl.Text = "label1";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Font = new System.Drawing.Font("Mongolian Baiti", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(851, 529);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(137, 16);
+            this.label1.TabIndex = 44;
+            this.label1.Text = "Haz tu acusación:";
+            this.label1.Visible = false;
+            // 
+            // Cartas_lbl
+            // 
+            this.Cartas_lbl.AutoSize = true;
+            this.Cartas_lbl.BackColor = System.Drawing.Color.Transparent;
+            this.Cartas_lbl.Font = new System.Drawing.Font("Mongolian Baiti", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Cartas_lbl.Location = new System.Drawing.Point(781, 9);
+            this.Cartas_lbl.Name = "Cartas_lbl";
+            this.Cartas_lbl.Size = new System.Drawing.Size(87, 16);
+            this.Cartas_lbl.TabIndex = 45;
+            this.Cartas_lbl.Text = "Mis cartas:";
+            this.Cartas_lbl.Visible = false;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.Transparent;
+            this.label3.Font = new System.Drawing.Font("Mongolian Baiti", 20F, System.Drawing.FontStyle.Bold);
+            this.label3.Location = new System.Drawing.Point(741, 36);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(220, 29);
+            this.label3.TabIndex = 47;
+            this.label3.Text = "Cartas sobrantes:";
+            this.label3.Visible = false;
             // 
             // Partida
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
+            this.BackgroundImage = global::cliente.Properties.Resources.fondo1;
             this.ClientSize = new System.Drawing.Size(1370, 710);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.Cartas_lbl);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.turno_lbl);
             this.Controls.Add(this.Sol_btn);
             this.Controls.Add(this.Dado_btn);
             this.Controls.Add(this.listBox1);
@@ -261,5 +322,9 @@
         private System.Windows.Forms.Button Dado_btn;
         private System.Windows.Forms.Button btn_chat;
         private System.Windows.Forms.Button Sol_btn;
+        private System.Windows.Forms.Label turno_lbl;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label Cartas_lbl;
+        private System.Windows.Forms.Label label3;
     }
 }

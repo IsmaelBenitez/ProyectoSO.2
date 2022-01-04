@@ -21,6 +21,7 @@ namespace cliente
         int IDp;
         int nMensajes = 0;
         int dado = 0;
+        int tiempo = 0;
 
         delegate void DelegadoParaEscribirMensaje(string mensaje);
         delegate void DelegadoparaJugador(Jugador Jug);
@@ -52,7 +53,6 @@ namespace cliente
                 cola.Enqueue(trozos[i + 2]);
             }
         }
-
         private void btn_chat_Click(object sender, EventArgs e)
         {
             if (MensajeBox.Text != string.Empty)
@@ -62,10 +62,7 @@ namespace cliente
                 server.Send(msg);
                 MensajeBox.Clear();
             }
-
-
         }
-
         public void RecibirMensaje(string mensaje)
         {
             DelegadoParaEscribirMensaje delegado = new DelegadoParaEscribirMensaje(EscribeMensaje);
@@ -79,7 +76,6 @@ namespace cliente
 
 
         }
-
         private void EscribeMensaje(string mensaje)
         {
             if (nMensajes < 6)
@@ -114,6 +110,16 @@ namespace cliente
             Jugadores.Add(Jug);
             cola.Enqueue(turno);
             turno = cola.Dequeue();
+            if (turno == sesion)
+            {
+                turno_lbl.Text = "Tu turno!";
+                turno_lbl.ForeColor = Color.Green;
+            }
+            else
+            {
+                turno_lbl.Text = "Turno de: "+ turno;
+                turno_lbl.ForeColor = Color.Black;
+            }
             string avatar = Jug.GetAvatar();
             switch (avatar)
             {
@@ -162,7 +168,6 @@ namespace cliente
 
 
         }
-
         private void MensajeBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if ((int)e.KeyChar == (int)Keys.Enter)
@@ -176,9 +181,10 @@ namespace cliente
                 }
             }
         }
-
         private void Partida_Load(object sender, EventArgs e)
         {
+            timer1.Interval = 60000;
+            timer1.Start();
 
             int x = 175;
             int y = 25;
@@ -369,7 +375,7 @@ namespace cliente
             room1.Tag = nBoton; // Le añado un tag, para permitirme ordenarlos
             room1.Location = new Point(25, 25);
             room1.Size = new Size(150, 150);
-            room1.BackgroundImage = Properties.Resources._1;
+            room1.BackgroundImage = new Bitmap("classelloc.png");
             room1.BackgroundImageLayout = ImageLayout.Stretch;
             room1.FlatStyle = FlatStyle.Flat;
             room1.FlatAppearance.BorderColor = Color.Empty;
@@ -387,7 +393,7 @@ namespace cliente
             room2.Tag = nBoton; // Le añado un tag, para permitirme ordenarlos
             room2.Location = new Point(375, 25);
             room2.Size = new Size(150, 150);
-            room2.BackgroundImage = Properties.Resources._1;
+            room2.BackgroundImage = new Bitmap("estaciolloc.png");
             room2.BackgroundImageLayout = ImageLayout.Stretch;
             room2.FlatStyle = FlatStyle.Flat;
             room2.FlatAppearance.BorderColor = Color.Empty;
@@ -404,7 +410,7 @@ namespace cliente
             room3.Tag = nBoton; // Le añado un tag, para permitirme ordenarlos
             room3.Location = new Point(25, 275);
             room3.Size = new Size(150, 150);
-            room3.BackgroundImage = Properties.Resources._1;
+            room3.BackgroundImage = new Bitmap("salalloc.png");
             room3.BackgroundImageLayout = ImageLayout.Stretch;
             room3.FlatStyle = FlatStyle.Flat;
             room3.FlatAppearance.BorderColor = Color.Empty;
@@ -422,7 +428,7 @@ namespace cliente
             room4.Tag = nBoton; // Le añado un tag, para permitirme ordenarlos
             room4.Location = new Point(25, 525);
             room4.Size = new Size(150, 150);
-            room4.BackgroundImage = Properties.Resources._1;
+            room4.BackgroundImage = new Bitmap("bibliolloc.png") ;
             room4.BackgroundImageLayout = ImageLayout.Stretch;
             room4.FlatStyle = FlatStyle.Flat;
             room4.FlatAppearance.BorderColor = Color.Empty;
@@ -440,7 +446,7 @@ namespace cliente
             room5.Tag = nBoton; // Le añado un tag, para permitirme ordenarlos
             room5.Location = new Point(375, 525);
             room5.Size = new Size(150, 150);
-            room5.BackgroundImage = Properties.Resources._1;
+            room5.BackgroundImage = new Bitmap("cafelloc.png");
             room5.BackgroundImageLayout = ImageLayout.Stretch;
             room5.FlatStyle = FlatStyle.Flat;
             room5.FlatAppearance.BorderColor = Color.Empty;
@@ -458,7 +464,7 @@ namespace cliente
             room6.Tag = nBoton; // Le añado un tag, para permitirme ordenarlos
             room6.Location = new Point(375, 275);
             room6.Size = new Size(150, 150);
-            room6.BackgroundImage = Properties.Resources._1;
+            room6.BackgroundImage = new Bitmap("resilloc.png");
             room6.BackgroundImageLayout = ImageLayout.Stretch;
             room6.FlatStyle = FlatStyle.Flat;
             room6.FlatAppearance.BorderColor = Color.Empty;
@@ -476,7 +482,7 @@ namespace cliente
             room7.Tag = nBoton; // Le añado un tag, para permitirme ordenarlos
             room7.Location = new Point(225, 275);
             room7.Size = new Size(100, 150);
-            room7.BackgroundImage = Properties.Resources._1;
+            room7.BackgroundImage =new Bitmap("halllloc.png") ;
             room7.BackgroundImageLayout = ImageLayout.Stretch;
             room7.FlatStyle = FlatStyle.Flat;
             room7.FlatAppearance.BorderColor = Color.Empty;
@@ -487,13 +493,22 @@ namespace cliente
             this.Controls.Add(room7);
 
             nBoton++;
-
+            turno_lbl.AutoSize = true;
             turno = cola.Dequeue();
+            if (turno == sesion)
+            {
+                turno_lbl.Text = "Tu turno!";
+                turno_lbl.ForeColor = Color.Green;
+            }
+            else
+            {
+                turno_lbl.Text = "Turno de: "+turno;
+                turno_lbl.ForeColor = Color.Black;
+            }
 
 
 
         }
-
         private void btn_click(object sender, EventArgs e)
         {
             if (sesion == turno)
@@ -520,6 +535,8 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        turno_lbl.Text = "Turno de: " + turno;
+                        turno_lbl.ForeColor = Color.Black;
                         dado = 0;
                         Dado_btn.Enabled = false;
                         room = false;
@@ -528,7 +545,6 @@ namespace cliente
             }
 
         }
-
         private Boolean Distancia(Point Casilla, Point Localizacion, int dado)
         {
 
@@ -563,7 +579,6 @@ namespace cliente
                 return false;
             }
         }
-
         private void room1_Click(object sender, EventArgs e)
         {
 
@@ -621,12 +636,14 @@ namespace cliente
                         }
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
-                        int lugar = 14;
+                        int lugar = 15;
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        turno_lbl.Text = "Turno de: " + turno;
+                        turno_lbl.ForeColor = Color.Black;
                         dado = 0;
                         Dado_btn.Enabled = false;
                         Jugadores[i].SetPosicion(new Point(175, 125));
@@ -636,7 +653,6 @@ namespace cliente
             }
 
         }
-
         private void room2_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -693,12 +709,14 @@ namespace cliente
                         }
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
-                        int lugar = 15;
+                        int lugar = 16;
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        turno_lbl.Text = "Turno de: " + turno;
+                        turno_lbl.ForeColor = Color.Black;
                         dado = 0;
                         Dado_btn.Enabled = false;
                         Jugadores[i].SetPosicion(new Point(325, 125));
@@ -707,7 +725,6 @@ namespace cliente
                 }
             }
         }
-
         private void room7_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -765,12 +782,14 @@ namespace cliente
                         }
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
-                        int lugar = 15;
+                        int lugar = 17;
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        turno_lbl.Text = "Turno de: " + turno;
+                        turno_lbl.ForeColor = Color.Black;
                         dado = 0;
                         Dado_btn.Enabled = false;
                         Jugadores[i].SetPosicion(new Point(225, 225));
@@ -823,24 +842,26 @@ namespace cliente
                                     }
                                 }
                             }
-                            int asesino = listBox1.SelectedIndex;
-                            int arma = listBox2.SelectedIndex + 6;
-                            int lugar = 15;
-                            string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
-                            byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
-                            server.Send(msg);
-                            cola.Enqueue(turno);
-                            turno = cola.Dequeue();
-                            dado = 0;
-                            Dado_btn.Enabled = false;
-                            Jugadores[i].SetPosicion(new Point(275, 275));
-                            room = true;
+                            
                         }
+                        int asesino = listBox1.SelectedIndex;
+                        int arma = listBox2.SelectedIndex + 6;
+                        int lugar = 17;
+                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                        server.Send(msg);
+                        cola.Enqueue(turno);
+                        turno = cola.Dequeue();
+                        turno_lbl.Text = "Turno de: " + turno;
+                        turno_lbl.ForeColor = Color.Black;
+                        dado = 0;
+                        Dado_btn.Enabled = false;
+                        Jugadores[i].SetPosicion(new Point(275, 275));
+                        room = true;
                     }
                 }
             }
         }
-
         private void room6_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -897,12 +918,14 @@ namespace cliente
                         }
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
-                        int lugar = 17;
+                        int lugar = 18;
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        turno_lbl.Text = "Turno de: " + turno;
+                        turno_lbl.ForeColor = Color.Black;
                         dado = 0;
                         Dado_btn.Enabled = false;
                         Jugadores[i].SetPosicion(new Point(375, 425));
@@ -911,7 +934,6 @@ namespace cliente
                 }
             }
         }
-
         private void room5_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -968,12 +990,14 @@ namespace cliente
                         }
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
-                        int lugar = 18;
+                        int lugar = 14;
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        turno_lbl.Text = "Turno de: " + turno;
+                        turno_lbl.ForeColor = Color.Black;
                         dado = 0;
                         Dado_btn.Enabled = false;
                         Jugadores[i].SetPosicion(new Point(325, 525));
@@ -982,7 +1006,6 @@ namespace cliente
                 }
             }
         }
-
         private void room4_Click(object sender, EventArgs e)
         {
 
@@ -1046,6 +1069,8 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        turno_lbl.Text = "Turno de: " + turno;
+                        turno_lbl.ForeColor = Color.Black;
                         dado = 0;
                         Dado_btn.Enabled = false;
                         Jugadores[i].SetPosicion(new Point(175, 525));
@@ -1054,7 +1079,6 @@ namespace cliente
                 }
             }
         }
-
         private void room3_Click(object sender, EventArgs e)
         {
 
@@ -1118,6 +1142,8 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        turno_lbl.Text = "Turno de: " + turno;
+                        turno_lbl.ForeColor = Color.Black;
                         dado = 0;
                         Dado_btn.Enabled = false;
                         Jugadores[i].SetPosicion(new Point(125, 425));
@@ -1126,7 +1152,6 @@ namespace cliente
                 }
             }
         }
-
         private void aza_button_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -1137,7 +1162,6 @@ namespace cliente
 
             }
         }
-
         private void guillem_btn_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -1148,7 +1172,6 @@ namespace cliente
 
             }
         }
-
         private void ismael_btn_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -1159,7 +1182,6 @@ namespace cliente
 
             }
         }
-
         private void itziar_btn_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -1170,7 +1192,6 @@ namespace cliente
 
             }
         }
-
         private void pedro_btn_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -1181,7 +1202,6 @@ namespace cliente
 
             }
         }
-
         private void victor_btn_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -1217,8 +1237,6 @@ namespace cliente
                 Invoke(delegado, new object[] { Carta });
                 i++;
             }
-
-
         }
         private void PonMiCarta(Carta carta)
         {
@@ -1254,7 +1272,6 @@ namespace cliente
             wait(3000);
             Controls.Remove(pic);
         }
-
         public void wait(int milliseconds)
         {
             System.Windows.Forms.Timer timer1 = new System.Windows.Forms.Timer();
@@ -1286,22 +1303,25 @@ namespace cliente
                 pic.ClientSize = new Size(175, 215);
                 pic.SizeMode = PictureBoxSizeMode.StretchImage;
                 if (i < 3)
-                    pic.Location = new Point(545 + i * 185, 40);
+                    pic.Location = new Point(575 + i * 185, 40);
                 else
-                    pic.Location = new Point(545 + (i - 3) * 185, 270);
+                    pic.Location = new Point(575 + (i - 3) * 185, 270);
                 //pic.BringToFront();
                 pic.Click += new EventHandler(Pic_Click);
                 Controls.Add(pic);
                 i++;
             }
-            Label cartasLBL = new Label();
-            cartasLBL.Location = new Point(545, 10);
-            cartasLBL.Text = "Mis Cartas: ";
-            cartasLBL.Font = new Font("Mongolian Baiti", 20);
-            cartasLBL.BringToFront();
-            Controls.Add(cartasLBL);
-        }
 
+
+            Cartas_lbl.Text = "Mis Cartas:";
+            Cartas_lbl.AutoSize = true;
+            Cartas_lbl.Font = new Font("Mongolian Baiti", 20);
+            Cartas_lbl.Visible = true;
+            Controls.Add(Cartas_lbl);
+            Cartas_lbl.BringToFront();
+            Sol_btn.Visible = true;
+            label1.Visible = true;
+        }
         private void Pic_Click(object sender, EventArgs e)
         {
             PictureBox pic = (PictureBox)sender;
@@ -1313,8 +1333,9 @@ namespace cliente
             Label Asesinos = new Label();
             Asesinos.Location = new Point(1185, 40);
             Asesinos.Text = "Asesinos";
-            Asesinos.Font = new Font("Mongolian Baiti", 12);
-            Asesinos.ForeColor = Color.White;
+            Asesinos.Font = new Font("Mongolian Baiti", 12,FontStyle.Bold);
+            Asesinos.ForeColor = Color.Black;
+            Asesinos.BackColor = Color.Transparent;
             Controls.Add(Asesinos);
             for (int i = 0; i < 6; i++)
             {
@@ -1328,18 +1349,20 @@ namespace cliente
 
                 // Set background and foreground  
 
-                dynamicCheckBox.ForeColor = Color.White;
+                dynamicCheckBox.ForeColor = Color.Black;
+                dynamicCheckBox.BackColor = Color.Transparent;
                 dynamicCheckBox.Text = carta.GetNombre();
                 dynamicCheckBox.Name = carta.GetNombre();
-                dynamicCheckBox.Font = new Font("Mongolian Baiti", 12);
+                dynamicCheckBox.Font = new Font("Mongolian Baiti", 12, FontStyle.Bold);
 
                 Controls.Add(dynamicCheckBox);
             }
             Label Armas = new Label();
             Armas.Location = new Point(1185, 240);
             Armas.Text = "Armas";
-            Armas.Font = new Font("Mongolian Baiti", 12);
-            Armas.ForeColor = Color.White;
+            Armas.Font = new Font("Mongolian Baiti", 12, FontStyle.Bold);
+            Armas.ForeColor = Color.Black;
+            Armas.BackColor = Color.Transparent;
             Controls.Add(Armas);
 
             for (int i = 6; i < 14; i++)
@@ -1353,18 +1376,20 @@ namespace cliente
 
                 // Set background and foreground  
 
-                dynamicCheckBox.ForeColor = Color.White;
+                dynamicCheckBox.ForeColor = Color.Black;
+                dynamicCheckBox.BackColor = Color.Transparent;
                 dynamicCheckBox.Text = carta.GetNombre();
                 dynamicCheckBox.Name = carta.GetNombre();
-                dynamicCheckBox.Font = new Font("Mongolian Baiti", 12);
+                dynamicCheckBox.Font = new Font("Mongolian Baiti", 12, FontStyle.Bold);
 
                 Controls.Add(dynamicCheckBox);
             }
             Label Lugares = new Label();
             Lugares.Location = new Point(1185, 490);
             Lugares.Text = "Lugares";
-            Lugares.Font = new Font("Mongolian Baiti", 12);
-            Lugares.ForeColor = Color.White;
+            Lugares.Font = new Font("Mongolian Baiti", 12, FontStyle.Bold);
+            Lugares.ForeColor = Color.Black;
+            Lugares.BackColor = Color.Transparent;
             Controls.Add(Lugares);
             for (int i = 14; i < 21; i++)
             {
@@ -1377,10 +1402,11 @@ namespace cliente
 
                 // Set background and foreground  
 
-                dynamicCheckBox.ForeColor = Color.White;
+                dynamicCheckBox.ForeColor = Color.Black;
+                dynamicCheckBox.BackColor = Color.Transparent;
                 dynamicCheckBox.Text = carta.GetNombre();
                 dynamicCheckBox.Name = carta.GetNombre();
-                dynamicCheckBox.Font = new Font("Mongolian Baiti", 12);
+                dynamicCheckBox.Font = new Font("Mongolian Baiti", 12, FontStyle.Bold);
 
                 Controls.Add(dynamicCheckBox);
             }
@@ -1391,7 +1417,6 @@ namespace cliente
             btn_chat.Visible = true;
             Dado_btn.Visible = true;
         }
-
         private void Dado_btn_Click(object sender, EventArgs e)
         {
             if (sesion == turno)
@@ -1468,7 +1493,15 @@ namespace cliente
             {
                 dado = 0;
                 Dado_btn.Enabled = true;
+                turno_lbl.Text = "Tu turno!";
+                turno_lbl.ForeColor = Color.Green;
             }
+            else
+            {
+                turno_lbl.ForeColor = Color.Black;
+                turno_lbl.Text = "Turno de: " + turno;
+            }
+
         }
         private Boolean CasillaLibre(Point Punto)
         {
@@ -1516,7 +1549,6 @@ namespace cliente
                 server.Send(msg);
             }
         }
-
         private Boolean HayCartas(Carta asesino, Carta arma, Carta lugar)
         {
             int i = 0;
@@ -1554,10 +1586,13 @@ namespace cliente
         {
             Chat.BackColor = Color.Snow;
         }
-
         public void Partida_FormClosing(object sender, FormClosingEventArgs e)
         {
             string mensaje = "14/" + IDp + "/" + sesion;
+            foreach (Carta p in MisCartas)
+            {
+                mensaje = mensaje + "/" + p.GetNum();
+            }
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
             server.Send(msg);
             if (cola.Count > 1)
@@ -1585,7 +1620,20 @@ namespace cliente
                 else
                 {
                     Carta carta = new Carta(Convert.ToInt32(trozos[2 * j + 1]));
+                    Label label = new Label();
+                    string texto = trozos[2*j] + " te ha mostrado esta carta:";
+                    label.Text = texto;
+                    label.Location = new Point(Width / 3-25, Height / 4 - 100);
+                    label.Font = new Font("Mongolian Baiti", 20, FontStyle.Bold);
+                    label.ForeColor = Color.Black;
+                    label.BackColor = Color.Transparent;
+                    label.AutoSize = true;
+           
+                 
+                    Controls.Add(label);
+                    label.BringToFront();
                     MuestraCarta(carta);
+                    Controls.Remove(label);
                     break;
                 }
             }
@@ -1595,7 +1643,6 @@ namespace cliente
             Delegado delegado = new Delegado(MuestraAcusacion);
             Invoke(delegado, new object[] { trozos });
         }
-
         private void Sol_btn_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -1608,8 +1655,9 @@ namespace cliente
                     int[] solucion = Form.DarDatos();
                     if(solucion[0]==Ganadoras[0].GetNum() && solucion[1]== Ganadoras[1].GetNum() && solucion[2] == Ganadoras[2].GetNum())
                     {
+                        timer1.Stop();
                         //Tu ganas
-                        string mensaje = "15/" + IDp + "/" + sesion;
+                        string mensaje = "15/" + IDp + "/" + sesion+"/"+tiempo;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                         server.Send(msg);
                         MessageBox.Show("Enhorabuena, tu combinación es correcta!");
@@ -1617,6 +1665,7 @@ namespace cliente
                     }
                     else
                     {
+                        MessageBox.Show("Lo siento, tu cominación no es correcta, buena suerte la próxima vez");
                         Close();
                     }
                 }
@@ -1638,6 +1687,8 @@ namespace cliente
             if (nombre == turno)
             {
                 turno = cola.Dequeue();
+                turno_lbl.Text="Turno de: " + turno;
+                turno_lbl.ForeColor = Color.Black;
             }
             else
             {
@@ -1654,11 +1705,31 @@ namespace cliente
             if (cola.Count < 1)
             {
                 //Este tio gana la partida porque es el ultimo.
-                string mensaje = "15/" + IDp + "/" + sesion;
+                timer1.Stop();
+                string mensaje = "15/" + IDp + "/" + sesion + "/" + tiempo;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
                 MessageBox.Show("Vaya, te has quedado solo, parece que eres el ganador ");
                 Close();
+            }
+            else
+            {
+                Label label = new Label();
+                string texto = nombre + " se ha marchado, estas son sus cartas:";
+                label.Text =texto;
+                label.Location =  new Point(Width / 3-25  , Height / 4 - 100);
+                label.Font = new Font("Mongolian Baiti", 20,FontStyle.Bold);
+                label.ForeColor = Color.Black;
+                label.AutoSize = true;
+                label.BackColor = Color.Transparent;
+                Controls.Add(label);
+                label.BringToFront();
+                for (int i=0; i < Convert.ToInt32(trozos[3]); i++)
+                {
+                    Carta carta = new Carta(Convert.ToInt32(trozos[i + 4]));
+                    MuestraCarta(carta);
+                }
+                Controls.Remove(label);
             }
         }
         public void LlegaGanador(string[] trozos)
@@ -1672,5 +1743,9 @@ namespace cliente
             Close();
         }
 
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            tiempo++;
+        }
     }
 }

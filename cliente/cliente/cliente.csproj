@@ -140,6 +140,10 @@
     <Content Include="Resources\cables.png" />
     <Content Include="Resources\cuchillo.png" />
     <Content Include="Resources\extintor.png" />
+    <None Include="Resources\fondo1.jpg" />
+    <None Include="Resources\fondo2.jpg" />
+    <None Include="Resources\fondo4.jpg" />
+    <None Include="Resources\fondo5.jpg" />
     <Content Include="Resources\osciloscopio.png" />
     <Content Include="Resources\termo.png" />
     <Content Include="Resources\tijeras.png" />

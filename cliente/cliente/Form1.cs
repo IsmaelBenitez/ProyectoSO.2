@@ -38,7 +38,7 @@ namespace cliente
         {
             //Establecemos conexión con el servidor
             IPAddress direc = IPAddress.Parse("169.254.15.179");
-            IPEndPoint ipep = new IPEndPoint(direc, 9000);
+            IPEndPoint ipep = new IPEndPoint(direc, 9070);
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
             {
@@ -826,8 +826,6 @@ namespace cliente
             return Convert.ToBase64String(ArrayResultado,
             0, ArrayResultado.Length);
         }
-
-
 
     }
 }
