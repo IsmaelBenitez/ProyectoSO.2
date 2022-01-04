@@ -100,6 +100,10 @@ namespace cliente
                     nombre = "Biblioteca";
                     this.image = new Bitmap("biblioteca.png");
                     break;
+                case 20:
+                    nombre = "Sala de actos";
+                    this.image = new Bitmap("actos.png");
+                    break;
             }
             Pic.Image = image;
         }

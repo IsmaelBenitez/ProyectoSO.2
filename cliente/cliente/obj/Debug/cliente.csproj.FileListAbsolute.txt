@@ -41,3 +41,4 @@ C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.csproj.CoreCompileInputs
 C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.exe
 C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.pdb
 C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.Acusacion.resources
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.Solucionar.resources

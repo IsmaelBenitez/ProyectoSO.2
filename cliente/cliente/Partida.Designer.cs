@@ -34,14 +34,15 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.Dado_btn = new System.Windows.Forms.Button();
             this.btn_chat = new System.Windows.Forms.Button();
+            this.Dado_btn = new System.Windows.Forms.Button();
             this.itziar_btn = new System.Windows.Forms.Button();
             this.aza_button = new System.Windows.Forms.Button();
             this.pedro_btn = new System.Windows.Forms.Button();
             this.guillem_btn = new System.Windows.Forms.Button();
             this.victor_btn = new System.Windows.Forms.Button();
             this.ismael_btn = new System.Windows.Forms.Button();
+            this.Sol_btn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Chat
@@ -101,16 +102,6 @@
             this.listBox1.TabIndex = 40;
             this.listBox1.Visible = false;
             // 
-            // Dado_btn
-            // 
-            this.Dado_btn.Location = new System.Drawing.Point(1038, 557);
-            this.Dado_btn.Name = "Dado_btn";
-            this.Dado_btn.Size = new System.Drawing.Size(114, 109);
-            this.Dado_btn.TabIndex = 41;
-            this.Dado_btn.UseVisualStyleBackColor = true;
-            this.Dado_btn.Visible = false;
-            this.Dado_btn.Click += new System.EventHandler(this.Dado_btn_Click);
-            // 
             // btn_chat
             // 
             this.btn_chat.Location = new System.Drawing.Point(729, 650);
@@ -121,6 +112,18 @@
             this.btn_chat.UseVisualStyleBackColor = true;
             this.btn_chat.Visible = false;
             this.btn_chat.Click += new System.EventHandler(this.btn_chat_Click);
+            // 
+            // Dado_btn
+            // 
+            this.Dado_btn.BackgroundImage = global::cliente.Properties.Resources.d1;
+            this.Dado_btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.Dado_btn.Location = new System.Drawing.Point(1038, 548);
+            this.Dado_btn.Name = "Dado_btn";
+            this.Dado_btn.Size = new System.Drawing.Size(114, 109);
+            this.Dado_btn.TabIndex = 41;
+            this.Dado_btn.UseVisualStyleBackColor = true;
+            this.Dado_btn.Visible = false;
+            this.Dado_btn.Click += new System.EventHandler(this.Dado_btn_Click);
             // 
             // itziar_btn
             // 
@@ -203,12 +206,23 @@
             this.ismael_btn.UseVisualStyleBackColor = false;
             this.ismael_btn.Click += new System.EventHandler(this.ismael_btn_Click);
             // 
+            // Sol_btn
+            // 
+            this.Sol_btn.Location = new System.Drawing.Point(1068, 657);
+            this.Sol_btn.Name = "Sol_btn";
+            this.Sol_btn.Size = new System.Drawing.Size(84, 23);
+            this.Sol_btn.TabIndex = 42;
+            this.Sol_btn.Text = "Solucionar";
+            this.Sol_btn.UseVisualStyleBackColor = true;
+            this.Sol_btn.Click += new System.EventHandler(this.Sol_btn_Click);
+            // 
             // Partida
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
             this.ClientSize = new System.Drawing.Size(1370, 710);
+            this.Controls.Add(this.Sol_btn);
             this.Controls.Add(this.Dado_btn);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.listBox2);
@@ -224,6 +238,7 @@
             this.Name = "Partida";
             this.Text = "Partida";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Partida_FormClosing);
             this.Load += new System.EventHandler(this.Partida_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -245,5 +260,6 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button Dado_btn;
         private System.Windows.Forms.Button btn_chat;
+        private System.Windows.Forms.Button Sol_btn;
     }
 }

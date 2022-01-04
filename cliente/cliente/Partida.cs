@@ -27,8 +27,8 @@ namespace cliente
         delegate void DelegadoParaCartas(Carta carta);
         delegate void Delegado(string[] trozos);
 
-     
-        Queue<string> cola =new Queue<string>();
+
+        Queue<string> cola = new Queue<string>();
         List<Jugador> Jugadores = new List<Jugador>();
         List<Carta> Ganadoras = new List<Carta>();
         List<Carta> MisCartas = new List<Carta>();
@@ -36,6 +36,7 @@ namespace cliente
         string turno;
         int Num;
         string[] chatmensajes = new string[7];
+        Boolean room = false;
         public Partida(Socket server, string[] trozos, string sesion)
         {
             InitializeComponent();
@@ -43,7 +44,7 @@ namespace cliente
             this.server = server;
             Datos = trozos;
             this.sesion = sesion;
-            
+
             IDp = Convert.ToInt32(trozos[Convert.ToInt32(trozos[1]) + 2]);
             int num = Convert.ToInt32(trozos[1]);
             for (int i = 0; i < num; i++)
@@ -61,7 +62,7 @@ namespace cliente
                 server.Send(msg);
                 MensajeBox.Clear();
             }
-            
+
 
         }
 
@@ -70,15 +71,15 @@ namespace cliente
             DelegadoParaEscribirMensaje delegado = new DelegadoParaEscribirMensaje(EscribeMensaje);
             Invoke(delegado, new object[] { mensaje });
         }
-        public void RecibirAvatar(string nombre,string avatar)
+        public void RecibirAvatar(string nombre, string avatar)
         {
             Jugador Jug = new Jugador(nombre, avatar);
             DelegadoparaJugador delegado = new DelegadoparaJugador(PonJugador);
             Invoke(delegado, new object[] { Jug });
-            
-        
+
+
         }
-        
+
         private void EscribeMensaje(string mensaje)
         {
             if (nMensajes < 6)
@@ -149,7 +150,7 @@ namespace cliente
                     break;
             }
             Num++;
-            if (Num >= cola.Count()+1)
+            if (Num >= cola.Count() + 1)
             {
                 aza_button.Visible = false;
                 guillem_btn.Visible = false;
@@ -158,8 +159,8 @@ namespace cliente
                 pedro_btn.Visible = false;
                 victor_btn.Visible = false;
             }
-            
-           
+
+
         }
 
         private void MensajeBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -178,7 +179,7 @@ namespace cliente
 
         private void Partida_Load(object sender, EventArgs e)
         {
-            
+
             int x = 175;
             int y = 25;
             string strButtonName = "btn_Tablero";  //Nombre que van a tener los botones del tablero
@@ -367,7 +368,7 @@ namespace cliente
             room1.Name = string.Format("{0}_{1}", strButtonName, nBoton); // Le doy un name que me permita identificar el boton
             room1.Tag = nBoton; // Le añado un tag, para permitirme ordenarlos
             room1.Location = new Point(25, 25);
-            room1.Size = new Size(150,150);
+            room1.Size = new Size(150, 150);
             room1.BackgroundImage = Properties.Resources._1;
             room1.BackgroundImageLayout = ImageLayout.Stretch;
             room1.FlatStyle = FlatStyle.Flat;
@@ -377,7 +378,7 @@ namespace cliente
 
 
             this.Controls.Add(room1);
-          
+
             nBoton++;
 
             var room2 = new Button();
@@ -499,8 +500,14 @@ namespace cliente
             {
                 Button cb = (sender as Button);
                 int i = DameJugador(sesion);
-                Boolean Puedes = Distancia(cb.Location, Jugadores[i].GetPoint(), dado);
-                
+                Boolean Puedes;
+                if (!room)
+                    Puedes = Distancia(cb.Location, Jugadores[i].GetPoint(), dado);
+                else
+                {
+                    Puedes = Distancia(cb.Location, Jugadores[i].GetPoint(), dado - 1);
+                }
+
                 if (Puedes)
                 {
                     Point Nuevo = new Point(cb.Location.X, cb.Location.Y);
@@ -513,21 +520,24 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        dado = 0;
+                        Dado_btn.Enabled = false;
+                        room = false;
                     }
                 }
             }
-            
+
         }
 
-        private Boolean Distancia(Point Casilla, Point Localizacion,int dado)
+        private Boolean Distancia(Point Casilla, Point Localizacion, int dado)
         {
-            
+
             float distY = Math.Abs(Casilla.Y - Localizacion.Y);
             float distX = Math.Abs(Casilla.X - Localizacion.X);
 
             float dist = distY + distX;
-            
-            if(dist == dado * 50)
+
+            if (dist == dado * 50)
             {
                 return true;
             }
@@ -612,15 +622,19 @@ namespace cliente
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
                         int lugar = 14;
-                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y+"/"+asesino+"/"+arma+"/"+lugar;
+                        string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        dado = 0;
+                        Dado_btn.Enabled = false;
+                        Jugadores[i].SetPosicion(new Point(175, 125));
+                        room = true;
                     }
                 }
             }
-            
+
         }
 
         private void room2_Click(object sender, EventArgs e)
@@ -685,6 +699,10 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        dado = 0;
+                        Dado_btn.Enabled = false;
+                        Jugadores[i].SetPosicion(new Point(325, 125));
+                        room = true;
                     }
                 }
             }
@@ -753,6 +771,10 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        dado = 0;
+                        Dado_btn.Enabled = false;
+                        Jugadores[i].SetPosicion(new Point(225, 225));
+                        room = true;
                     }
                 }
                 else if (TambienPuedes)
@@ -801,6 +823,18 @@ namespace cliente
                                     }
                                 }
                             }
+                            int asesino = listBox1.SelectedIndex;
+                            int arma = listBox2.SelectedIndex + 6;
+                            int lugar = 15;
+                            string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
+                            byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                            server.Send(msg);
+                            cola.Enqueue(turno);
+                            turno = cola.Dequeue();
+                            dado = 0;
+                            Dado_btn.Enabled = false;
+                            Jugadores[i].SetPosicion(new Point(275, 275));
+                            room = true;
                         }
                     }
                 }
@@ -869,6 +903,10 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        dado = 0;
+                        Dado_btn.Enabled = false;
+                        Jugadores[i].SetPosicion(new Point(375, 425));
+                        room = true;
                     }
                 }
             }
@@ -936,6 +974,10 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        dado = 0;
+                        Dado_btn.Enabled = false;
+                        Jugadores[i].SetPosicion(new Point(325, 525));
+                        room = true;
                     }
                 }
             }
@@ -1004,6 +1046,10 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        dado = 0;
+                        Dado_btn.Enabled = false;
+                        Jugadores[i].SetPosicion(new Point(175, 525));
+                        room = true;
                     }
                 }
             }
@@ -1072,6 +1118,10 @@ namespace cliente
                         server.Send(msg);
                         cola.Enqueue(turno);
                         turno = cola.Dequeue();
+                        dado = 0;
+                        Dado_btn.Enabled = false;
+                        Jugadores[i].SetPosicion(new Point(125, 425));
+                        room = true;
                     }
                 }
             }
@@ -1079,12 +1129,12 @@ namespace cliente
 
         private void aza_button_Click(object sender, EventArgs e)
         {
-            if (turno==sesion)
+            if (turno == sesion)
             {
                 string mensaje = "9/aza/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-                
+
             }
         }
 
@@ -1095,7 +1145,7 @@ namespace cliente
                 string mensaje = "9/guillem/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-             
+
             }
         }
 
@@ -1106,7 +1156,7 @@ namespace cliente
                 string mensaje = "9/ismael/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-                
+
             }
         }
 
@@ -1117,7 +1167,7 @@ namespace cliente
                 string mensaje = "9/itziar/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-                
+
             }
         }
 
@@ -1128,7 +1178,7 @@ namespace cliente
                 string mensaje = "9/pedro/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-                
+
             }
         }
 
@@ -1139,7 +1189,7 @@ namespace cliente
                 string mensaje = "9/victor/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-                
+
             }
         }
         public void CartasGanadoras(string[] cartas)
@@ -1162,13 +1212,13 @@ namespace cliente
             int i = 0;
             while (i < Convert.ToInt32(cartas[2]))
             {
-                Carta Carta = new Carta(Convert.ToInt32(cartas[i+3]));
+                Carta Carta = new Carta(Convert.ToInt32(cartas[i + 3]));
                 DelegadoParaCartas delegado = new DelegadoParaCartas(PonMiCarta);
                 Invoke(delegado, new object[] { Carta });
                 i++;
             }
-            
-           
+
+
         }
         private void PonMiCarta(Carta carta)
         {
@@ -1177,7 +1227,6 @@ namespace cliente
         public void CartasSobrantes(string[] cartas)
         {
             int i = 0;
-            timer1.Interval = 3000;
             while (i < Convert.ToInt32(cartas[2]))
             {
                 Carta Carta = new Carta(Convert.ToInt32(cartas[i + 3]));
@@ -1191,17 +1240,17 @@ namespace cliente
             Delegado = new DelegadoParaCartas(AñadeCheckBoxes);
             Invoke(Delegado, new object[] { carta });
         }
-        private void  MuestraCarta(Carta carta)
+        private void MuestraCarta(Carta carta)
         {
-            
+
             PictureBox pic = carta.DamePic();
             pic.Width = 300;
             pic.Height = 500;
-            pic.ClientSize = new Size(300, 500);
+            pic.ClientSize = new Size(250, 350);
             pic.SizeMode = PictureBoxSizeMode.StretchImage;
-            pic.Location = new Point(Width / 3 + 100, Height/4 -50 );
-            pic.BringToFront();
+            pic.Location = new Point(Width / 3 + 100, Height / 4 - 50);
             Controls.Add(pic);
+            pic.BringToFront();
             wait(3000);
             Controls.Remove(pic);
         }
@@ -1225,23 +1274,23 @@ namespace cliente
                 Application.DoEvents();
             }
         }
-        private void MuestraMisCartas( Carta carta)
+        private void MuestraMisCartas(Carta carta)
         {
             int i = 0;
             foreach (Carta p in MisCartas)
             {
                 PictureBox pic = p.DamePic();
                 pic.Width = 175;
-                pic.Height = 250;
+                pic.Height = 200;
                 pic.Tag = p.GetNum();
-                pic.ClientSize = new Size(175, 250);
+                pic.ClientSize = new Size(175, 215);
                 pic.SizeMode = PictureBoxSizeMode.StretchImage;
                 if (i < 3)
                     pic.Location = new Point(545 + i * 185, 40);
                 else
-                    pic.Location = new Point(545 + (i-3) * 185, 270);
-                pic.BringToFront();
-                pic.Click += new EventHandler(Pic_Click) ;
+                    pic.Location = new Point(545 + (i - 3) * 185, 270);
+                //pic.BringToFront();
+                pic.Click += new EventHandler(Pic_Click);
                 Controls.Add(pic);
                 i++;
             }
@@ -1257,7 +1306,7 @@ namespace cliente
         {
             PictureBox pic = (PictureBox)sender;
             int j = (int)pic.Tag;
-            
+
         }
         private void AñadeCheckBoxes(Carta Carta)
         {
@@ -1271,14 +1320,14 @@ namespace cliente
             {
                 Carta carta = new Carta(i);
                 CheckBox dynamicCheckBox = new CheckBox();
-                dynamicCheckBox.Location = new Point(1185, 65 +25 * i);
-         
-                
+                dynamicCheckBox.Location = new Point(1185, 65 + 25 * i);
+
+
                 dynamicCheckBox.Width = 300;
                 dynamicCheckBox.Height = 30;
 
                 // Set background and foreground  
-               
+
                 dynamicCheckBox.ForeColor = Color.White;
                 dynamicCheckBox.Text = carta.GetNombre();
                 dynamicCheckBox.Name = carta.GetNombre();
@@ -1297,7 +1346,7 @@ namespace cliente
             {
                 Carta carta = new Carta(i);
                 CheckBox dynamicCheckBox = new CheckBox();
-                dynamicCheckBox.Location = new Point(1185, 65 + 25 * (i+2));
+                dynamicCheckBox.Location = new Point(1185, 65 + 25 * (i + 2));
 
                 dynamicCheckBox.Width = 300;
                 dynamicCheckBox.Height = 30;
@@ -1317,7 +1366,7 @@ namespace cliente
             Lugares.Font = new Font("Mongolian Baiti", 12);
             Lugares.ForeColor = Color.White;
             Controls.Add(Lugares);
-            for (int i = 14; i < 20; i++)
+            for (int i = 14; i < 21; i++)
             {
                 Carta carta = new Carta(i);
                 CheckBox dynamicCheckBox = new CheckBox();
@@ -1347,16 +1396,38 @@ namespace cliente
         {
             if (sesion == turno)
             {
-                
+
                 Random random = new Random();
                 for (int i = 0; i < 10; i++)
                 {
                     dado = random.Next(1, 7);
                     switch (dado)
                     {
-                        // No implementado aún
+                        case 1:
+                            Dado_btn.BackgroundImage = new Bitmap("d1.png");
+                            Dado_btn.BackgroundImageLayout = ImageLayout.Stretch;
+                            break;
+                        case 2:
+                            Dado_btn.BackgroundImage = new Bitmap("d2.png");
+                            Dado_btn.BackgroundImageLayout = ImageLayout.Stretch;
+                            break;
+                        case 3:
+                            Dado_btn.BackgroundImage = new Bitmap("d3.png");
+                            Dado_btn.BackgroundImageLayout = ImageLayout.Stretch;
+                            break;
+                        case 4:
+                            Dado_btn.BackgroundImage = new Bitmap("d4.png");
+                            Dado_btn.BackgroundImageLayout = ImageLayout.Stretch;
+                            break;
+                        case 5:
+                            Dado_btn.BackgroundImage = new Bitmap("d5.png");
+                            Dado_btn.BackgroundImageLayout = ImageLayout.Stretch;
+                            break;
+                        case 6:
+                            Dado_btn.BackgroundImage = new Bitmap("d6.png");
+                            Dado_btn.BackgroundImageLayout = ImageLayout.Stretch;
+                            break;
                     }
-                    Dado_btn.Text = dado.ToString();
                     wait(300);
                 }
                 Dado_btn.Enabled = false;
@@ -1382,7 +1453,7 @@ namespace cliente
         }
         public void DameMovimiento(string[] trozos)
         {
-            
+
             Delegado delegado = new Delegado(MoverFicha);
             Invoke(delegado, new object[] { trozos });
         }
@@ -1403,7 +1474,7 @@ namespace cliente
         {
             Boolean Libre = true;
             int i = 0;
-            while (i<Jugadores.Count && Libre)
+            while (i < Jugadores.Count && Libre)
             {
                 if (Jugadores[i].GetPoint() == Punto)
                     Libre = false;
@@ -1429,7 +1500,7 @@ namespace cliente
             Boolean Hay = HayCartas(asesino, arma, lugar);
             if (!Hay)
             {
-                string Mensaje = "12/"+IDp+"/"+sesion;
+                string Mensaje = "12/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                 server.Send(msg);
             }
@@ -1446,24 +1517,24 @@ namespace cliente
             }
         }
 
-        private Boolean HayCartas(Carta asesino,Carta arma, Carta lugar)
+        private Boolean HayCartas(Carta asesino, Carta arma, Carta lugar)
         {
             int i = 0;
             Boolean encontrado = false;
-            while (i<MisCartas.Count && !encontrado)
+            while (i < MisCartas.Count && !encontrado)
             {
                 if (MisCartas[i].GetNombre() == asesino.GetNombre() || MisCartas[i].GetNombre() == arma.GetNombre() || MisCartas[i].GetNombre() == lugar.GetNombre())
                     encontrado = true;
-                else 
+                else
                     i++;
             }
             return encontrado;
         }
-        private List<Carta> DameLista (Carta asesino, Carta arma, Carta lugar)
+        private List<Carta> DameLista(Carta asesino, Carta arma, Carta lugar)
         {
             List<Carta> cartas1 = new List<Carta>();
             int i = 0;
-            while (i < MisCartas.Count )
+            while (i < MisCartas.Count)
             {
                 if (MisCartas[i].GetNombre() == asesino.GetNombre() || MisCartas[i].GetNombre() == arma.GetNombre() || MisCartas[i].GetNombre() == lugar.GetNombre())
                 {
@@ -1483,5 +1554,123 @@ namespace cliente
         {
             Chat.BackColor = Color.Snow;
         }
+
+        public void Partida_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            string mensaje = "14/" + IDp + "/" + sesion;
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+            if (cola.Count > 1)
+            {
+                if (turno == sesion)
+                {
+                    turno = cola.Dequeue();
+                }
+                else
+                {
+                    int i = DameJugador(sesion);
+                    Jugadores.RemoveAt(i);
+                }
+            }
+        }
+        public void MuestraAcusacion(string[] trozos)
+        {
+            int j = 1;
+            while (2 * j < trozos.Count())
+            {
+                if (Convert.ToInt32(trozos[2 * j + 1]) == -1)
+                {
+                    j++;
+                }
+                else
+                {
+                    Carta carta = new Carta(Convert.ToInt32(trozos[2 * j + 1]));
+                    MuestraCarta(carta);
+                    break;
+                }
+            }
+        }
+        public void muestraAcusacion(string[] trozos)
+        {
+            Delegado delegado = new Delegado(MuestraAcusacion);
+            Invoke(delegado, new object[] { trozos });
+        }
+
+        private void Sol_btn_Click(object sender, EventArgs e)
+        {
+            if (turno == sesion)
+            {
+                DialogResult dialogResult = MessageBox.Show("Advertencia: Seguro que quieres solucionar? No habrá vuelta atrás", "Aviso", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    Solucionar Form = new Solucionar();
+                    Form.ShowDialog();
+                    int[] solucion = Form.DarDatos();
+                    if(solucion[0]==Ganadoras[0].GetNum() && solucion[1]== Ganadoras[1].GetNum() && solucion[2] == Ganadoras[2].GetNum())
+                    {
+                        //Tu ganas
+                        string mensaje = "15/" + IDp + "/" + sesion;
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                        server.Send(msg);
+                        MessageBox.Show("Enhorabuena, tu combinación es correcta!");
+                        Close();
+                    }
+                    else
+                    {
+                        Close();
+                    }
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+
+                }
+            }
+  
+        }
+        public void SalirPartida(string[] trozos)
+        {
+            Delegado delegado = new Delegado(SacarDePartida);
+            Invoke(delegado, new object[] { trozos });
+        }
+        public void SacarDePartida(string[] trozos)
+        {
+            string nombre = trozos[2];
+            if (nombre == turno)
+            {
+                turno = cola.Dequeue();
+            }
+            else
+            {
+                int i = DameJugador(nombre);
+                Jugadores.RemoveAt(i);
+                int j = cola.Count;
+                for(int p = 0; p < j; p++)
+                {
+                    string Jugador = cola.Dequeue();
+                    if (Jugador != nombre)
+                        cola.Enqueue(Jugador);
+                }
+            }
+            if (cola.Count < 1)
+            {
+                //Este tio gana la partida porque es el ultimo.
+                string mensaje = "15/" + IDp + "/" + sesion;
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+                MessageBox.Show("Vaya, te has quedado solo, parece que eres el ganador ");
+                Close();
+            }
+        }
+        public void LlegaGanador(string[] trozos)
+        {
+            MessageBox.Show(trozos[2] + " ha acertado la combinación ganadora:\nAsesin@: " + Ganadoras[0].GetNombre() + "\nArma:  " + Ganadoras[1].GetNombre() + " \nLugar: " + Ganadoras[2].GetNombre());
+            DelegadoParaEscribirMensaje delegado = new DelegadoParaEscribirMensaje(Cerrar);
+            Invoke(delegado, new object[] { "a" });
+        }
+        public void Cerrar(string letra)
+        {
+            Close();
+        }
+
     }
 }

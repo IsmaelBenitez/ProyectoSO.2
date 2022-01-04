@@ -35,6 +35,7 @@ typedef struct{
 typedef struct{
 	int ocupado;
 	int invitaciones;
+	int BBDD;
 	ListaConectados Jugadores;
 	ListaAcusaciones Acusaciones;
 }Partida;
@@ -53,7 +54,7 @@ void InciarAcusacion(TPartidas tabla,int Id, int socket){
 int Baraja[20];
 void InicializarBaraja(int baraja[20]){
 	int i=0;
-	while (i<20){
+	while (i<21){
 		baraja[i]=i;
 		i++;
 	}
@@ -63,7 +64,7 @@ int RepartirCartasGanadoras(Partida *partida, int cont,int Id){
 	srand(time(0));
 	int i = rand() %6; // Personas
 	int j = rand() %8; //Armas
-	int k = rand() %6; // Lugar
+	int k = rand() %7; // Lugar
 	j=j+6;
 	k=k+14;
 	printf("i=%d,j=%d,k=%d",i,j,k);
@@ -80,7 +81,7 @@ int RepartirCartasGanadoras(Partida *partida, int cont,int Id){
 }
 int RepartirCartasPersonales(Partida *partida, int cont, int Id){
 	int jug = partida->Jugadores.num;
-	div_t resultadoDeLaDivision=div(17,jug);
+	div_t resultadoDeLaDivision=div(18,jug);
 	int cartas = resultadoDeLaDivision.quot; 
 	printf("Numero de cartas:%d \n",cartas);
 	
@@ -123,11 +124,11 @@ int RepartirCartasSobrantes(Partida *partida, int cont, int Id){
 	
 }
 int SacarCartas(int baraja[20],int i,int cont){
-	while (i<19){
+	while (i<20){
 		baraja[i]=baraja[i+1];
 		i++;
 	}
-	baraja[19]=-1;
+	baraja[20]=-1;
 	
 	cont -- ;
 	return cont;
@@ -263,6 +264,11 @@ void AnadirAvatar(ListaConectados *lista, char sesion[20],char avatar[20]){
 	strcpy(lista->conectados[i].avatar,avatar);
 	lista->avatares++;
 }
+void EliminarTodos(ListaConectados *lista){
+	while (lista->num>0){
+		Elimina(lista,lista->conectados[0].nombre);
+	}
+}
 //Funciones para enviar notificaciones
 void EnviarLista (){
 	char notificacion[300];
@@ -375,6 +381,24 @@ void ResponderAcusacion(ListaAcusaciones *lista,int Id){
 		else
 		   write (tabla[Id].Jugadores.conectados[i].socket,Notificacion2, strlen(Notificacion2));
 		i=i+1;
+	}
+}
+void EnviarSalirPartida(int Id,char sesion[20],int socket){
+	char Notificacion[200];
+	sprintf(Notificacion,"18/%d/%s",Id,sesion);
+	for(int i=0;i<tabla[Id].Jugadores.num;i++){
+		if(tabla[Id].Jugadores.conectados[i].socket!=socket){
+			write (tabla[Id].Jugadores.conectados[i].socket,Notificacion, strlen(Notificacion));
+		}
+	}
+}
+void EnviarGanador(int Id,char sesion[20],int socket){
+	char Notificacion[200];
+	sprintf(Notificacion,"19/%d/%s",Id,sesion);
+	for(int i=0;i<tabla[Id].Jugadores.num;i++){
+		if(tabla[Id].Jugadores.conectados[i].socket!=socket){
+			write (tabla[Id].Jugadores.conectados[i].socket,Notificacion, strlen(Notificacion));
+		}
 	}
 }
 
@@ -580,7 +604,6 @@ void *AtenderCliente(void *socket) {
 			p=strtok(NULL,"/");
 			//invitaciones=p
 			tabla[i].invitaciones=atoi(p);
-			printf("%d\n",tabla[i].invitaciones);
 			p=strtok(NULL,"/");
 			
 			while (p!=NULL)
@@ -599,10 +622,10 @@ void *AtenderCliente(void *socket) {
 			p=strtok(NULL,"/");
 			int Id=atoi(p);
 			if (strcmp(respuesta,"SI")==0){
-				printf("REspuesta SI\n");
+				
 				char nombre[20];
 				DameConectado(sock_conn,&nombre);
-				printf("Este es el nombre despues de la funcion dame conectado %s\n",nombre);
+				
 				pthread_mutex_lock(&mutex);
 				AnadirConectado(&(tabla[Id].Jugadores),nombre,sock_conn);
 				pthread_mutex_unlock(&mutex);
@@ -616,6 +639,12 @@ void *AtenderCliente(void *socket) {
 				//Partida lista para empezar
 				printf("Partida lista para empezar\n");
 				EmpezarPartida(Id);
+				//Se le asigna un identificador en la base de datos.
+				int i = DameID();
+				pthread_mutex_lock(&mutex);
+				tabla[Id].BBDD=i;
+				PonPartida(Id);
+				pthread_mutex_unlock(&mutex);
 			}
 		}
 		else if (codigo==8){
@@ -642,11 +671,12 @@ void *AtenderCliente(void *socket) {
 			strcpy(sesion,p);
 			pthread_mutex_lock(&mutex);
 			AnadirAvatar(&tabla[Id].Jugadores,sesion,avatar);
+			PonParticipacion(Id,sesion,avatar);
 			pthread_mutex_unlock(&mutex);
 			EnviarAvatar(Id,sesion,avatar);
 			
 			if(tabla[Id].Jugadores.avatares==tabla[Id].Jugadores.num){
-				int cont = 20;
+				int cont = 21;
 				pthread_mutex_lock(&mutex);
 				InicializarBaraja(Baraja);
 				cont = RepartirCartasGanadoras(&tabla[Id],cont,Id);
@@ -727,6 +757,31 @@ void *AtenderCliente(void *socket) {
 				ResponderAcusacion(&tabla[Id].Acusaciones,Id);
 			}
 		}
+		else if(codigo==14){
+			p=strtok(NULL,"/");
+			int Id=atoi(p);
+			p=strtok(NULL,"/");
+			char sesion[20];
+			strcpy(sesion,p);
+			pthread_mutex_lock(&mutex);
+			Elimina(&tabla[Id].Jugadores,sesion);
+			pthread_mutex_unlock(&mutex);
+			EnviarSalirPartida(Id,sesion,sock_conn);
+			
+		}
+		else if(codigo==15){
+			p=strtok(NULL,"/");
+			int Id=atoi(p);
+			p=strtok(NULL,"/");
+			char sesion[20];
+			strcpy(sesion,p);
+			pthread_mutex_lock(&mutex);
+			EnviarGanador(Id,sesion,sock_conn);
+			EliminarTodos(&tabla[Id].Jugadores);
+			PonGanador(Id,sesion);
+			pthread_mutex_unlock(&mutex);
+						
+		}
 		
 	
 	}
@@ -741,7 +796,7 @@ void *AtenderCliente(void *socket) {
 	else
 		printf("No se puede desconectar a este usuario");
 }
-//Funciones para atender las peticiones del server
+//Funciones para atender las peticiones del server a la base de datos;
 int EstaRegistrado(char nombre[60],char contrasena[60]){
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
@@ -968,6 +1023,119 @@ void GanadorPartida(char Identificador[60],char *nombre[60]){
 		printf("El ganador de la partida %s, es %s \n",Identificador,row[0]);
 		sprintf(nombre,"5/%s",row[0]);
 		printf("5/%s\n",nombre);
+	}
+}
+int DameID(){
+	int err;
+	// Estructura especial para almacenar resultados de consultas 
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	
+	char consulta[500];
+	strcpy(consulta,"SELECT MAX(Identificador) From Partida");
+	err=mysql_query (conn, consulta);
+	if (err!=0) {
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	resultado = mysql_store_result (conn);
+	row = mysql_fetch_row (resultado);
+	if (row == NULL){
+		printf ("No se han obtenido datos en la consulta\n");
+	}
+	else{
+		return atoi(row[0])+1;
+	}
+}
+int DameIDJ(char sesion[20]){
+	int err;
+	// Estructura especial para almacenar resultados de consultas 
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	
+	char consulta[500];
+	sprintf(consulta,"SELECT Identificador From Jugador WHERE Nombre='%s'",sesion);
+	err=mysql_query (conn, consulta);
+	if (err!=0) {
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	resultado = mysql_store_result (conn);
+	row = mysql_fetch_row (resultado);
+	if (row == NULL){
+		printf ("No se han obtenido datos en la consulta\n");
+	}
+	else{
+		printf("%d",atoi(row[0]));
+		return atoi(row[0]);
+	}
+}
+void PonPartida(int Id){
+	int err;
+	// Estructura especial para almacenar resultados de consultas 
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	
+	char consulta[500];
+	
+	sprintf(consulta,"INSERT INTO Partida VALUES(%d,-1,1)",tabla[Id].BBDD);
+	printf("%s",consulta);
+	err=mysql_query (conn, consulta);
+	if (err!=0) {
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	resultado = mysql_store_result (conn);
+	row = mysql_fetch_row (resultado);
+	if (row == NULL){
+		printf ("No se han obtenido datos en la consulta\n");
+	}
+}
+void PonParticipacion(int Id ,char sesion[20],char avatar[20]){
+	int err;
+	// Estructura especial para almacenar resultados de consultas 
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	int IDJ=DameIDJ(sesion);
+	
+	char consulta[500];
+	
+	sprintf(consulta,"INSERT INTO Participacion VALUES(%d,%d,%s)",IDJ,tabla[Id].BBDD,avatar);
+	err=mysql_query (conn, consulta);
+	if (err!=0) {
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	resultado = mysql_store_result (conn);
+	row = mysql_fetch_row (resultado);
+	if (row == NULL){
+		printf ("No se han obtenido datos en la consulta\n");
+	}
+	
+}
+void PonGanador(int Id,char sesion[20]){
+	int err;
+	// Estructura especial para almacenar resultados de consultas 
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	
+	char consulta[500];
+	
+	sprintf(consulta, "UPDATE Partida SET Partida.Ganador = '%s' WHERE Identificador= %d",sesion,tabla[Id].BBDD);
+	err=mysql_query (conn, consulta);
+	if (err!=0) {
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	resultado = mysql_store_result (conn);
+	row = mysql_fetch_row (resultado);
+	if (row == NULL){
+		printf ("No se han obtenido datos en la consulta\n");
 	}
 }
 

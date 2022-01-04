@@ -55,24 +55,28 @@ namespace cliente
                 case "ismael":
                     Posicion = new Point(325, 625);
                     pic.Image = new Bitmap("fichaisma.png");
+                    pic.BackColor = Color.ForestGreen;
                     pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); 
 
                     break;
                 case "itziar":
                     Posicion= new Point(25, 475);
                     pic.Image = new Bitmap("fichaitzi.png");
+                    pic.BackColor = Color.DarkMagenta;
                     pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); 
 
                     break;
                 case "pedro":
                     Posicion = new Point(475, 175);
                     pic.Image = new Bitmap("fichapedro.png");
+                    pic.BackColor = Color.DeepPink;
                     pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); 
 
                     break;
                 case "victor":
                     Posicion= new Point(475, 475);
                     pic.Image = new Bitmap("fichavictor.png");
+                    pic.BackColor = Color.Gold;
                     pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); ;
                     break;
             }
@@ -108,6 +112,10 @@ namespace cliente
         public Point GetPoint()
         {
             return Posicion;
+        }
+        public void SetPosicion(Point Punto)
+        {
+            Posicion = Punto;
         }
     }
 }

@@ -338,7 +338,7 @@ namespace cliente
                         case 1:
                             if (trozos[1] == "OK")
                             {
-                                MessageBox.Show("Usuario encontrado");
+                                
                                 DelegadoParaEscribir delegado = new DelegadoParaEscribir(DesaparecerIniciarSesion);
                                 this.Invoke(delegado);
                             }
@@ -351,7 +351,7 @@ namespace cliente
                         case 2:
                             if (trozos[1] == "OK")
                             {
-                                MessageBox.Show("Usuario Creado");
+                                
                                 DelegadoParaEscribir delegado1 = new DelegadoParaEscribir(DesaparecerRegistarse);
                                 this.Invoke(delegado1);
                             }
@@ -415,7 +415,6 @@ namespace cliente
                         case 8:
                             //Llega el mensaje de iniciar la partida
                             int j = 0;
-                            MessageBox.Show("La partida va a empezar");
                             while (j < Convert.ToInt32(trozos[1]))
                             {
                                 orden[j] = trozos[j + 2];
@@ -551,6 +550,7 @@ namespace cliente
                                         Carta carta = new Carta(Convert.ToInt32(trozos[2 * j + 1]));
                                         texto = trozos[2 * j] + " enseña la carta: "+carta.GetNombre();
                                         formularios[i].RecibirMensaje(texto);
+                                        formularios[i].muestraAcusacion(trozos);
                                         break;
                                     }
 
@@ -559,6 +559,23 @@ namespace cliente
                                 formularios[i].acabaAcusacion("a");
                             }
                             break;
+                        case 18:
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
+                            {
+                                formularios[i].SalirPartida(trozos);
+                            }
+                            break;
+                        case 19:
+                            ID = Convert.ToInt32(trozos[1]);
+                            i = EncontrarForm(ID);
+                            if (i != -1)
+                            {
+                                formularios[i].LlegaGanador(trozos);
+                            }
+                            break;
+
 
 
                     }
@@ -581,25 +598,38 @@ namespace cliente
 
         private void Grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
- 
-            if (invitados < 6)
+            try
             {
-                int j = e.RowIndex;
-                if (Grid.Rows[j].Cells[0].Style.BackColor == Color.Green)
+
+
+                if (invitados < 6)
                 {
-                    Grid.Rows[j].Cells[0].Style.BackColor = Color.White;
-                    EliminarInvitado(Grid[0, j].Value.ToString());
-                }
-                else
-                {
-                    if (Grid[0, j].Value.ToString() != sesion)
+                    int j = e.RowIndex;
+                    if (Grid.Rows[j].Cells[0].Style.BackColor == Color.Green)
                     {
-                        Invitados[invitados] = Grid[0, j].Value.ToString();
-                        Grid.Rows[j].Cells[0].Style.BackColor = Color.Green;
-                        invitados++;
+                        Grid.Rows[j].Cells[0].Style.BackColor = Color.White;
+                        EliminarInvitado(Grid[0, j].Value.ToString());
+                    }
+                    else
+                    {
+                        if(Grid[0, j].Value != null)
+                        { 
+                            if (Grid[0, j].Value.ToString() != sesion)
+                            {
+                                Invitados[invitados] = Grid[0, j].Value.ToString();
+                                Grid.Rows[j].Cells[0].Style.BackColor = Color.Green;
+                                invitados++;
+                            }
+                        }
+
                     }
                 }
             }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                
+            }
+           
 
 
 
@@ -638,7 +668,6 @@ namespace cliente
                     mensaje = mensaje + "/" + Invitados[i];
                     i++;
                 }
-                MessageBox.Show(mensaje);
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
                 VaciarInvitados();

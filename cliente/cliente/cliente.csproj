@@ -69,6 +69,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Solucionar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Solucionar.Designer.cs">
+      <DependentUpon>Solucionar.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Acusacion.resx">
       <DependentUpon>Acusacion.cs</DependentUpon>
     </EmbeddedResource>
@@ -88,6 +94,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Solucionar.resx">
+      <DependentUpon>Solucionar.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -111,6 +120,22 @@
     <None Include="bin\Debug\itziar.png" />
     <None Include="bin\Debug\pedro.png" />
     <None Include="bin\Debug\victor.png" />
+    <None Include="bin\Debug\d1.png" />
+    <None Include="bin\Debug\actos.png" />
+    <None Include="bin\Debug\barra.png" />
+    <None Include="bin\Debug\biblioteca.png" />
+    <None Include="bin\Debug\cables.png" />
+    <None Include="bin\Debug\cafeteria.png" />
+    <None Include="bin\Debug\clase.png" />
+    <None Include="bin\Debug\cuchillo.png" />
+    <None Include="bin\Debug\estacion.png" />
+    <None Include="bin\Debug\extintor.png" />
+    <None Include="bin\Debug\hall.png" />
+    <None Include="bin\Debug\osciloscopio.png" />
+    <None Include="bin\Debug\residencia.png" />
+    <None Include="bin\Debug\termo.png" />
+    <None Include="bin\Debug\tijeras.png" />
+    <None Include="bin\Debug\veneno.png" />
     <Content Include="Resources\barra.png" />
     <Content Include="Resources\cables.png" />
     <Content Include="Resources\cuchillo.png" />

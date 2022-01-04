@@ -20,6 +20,7 @@ namespace cliente
         public Acusacion()
         {
             InitializeComponent();
+            this.ControlBox = false;
         }
 
         private void Acusacion_Load(object sender, EventArgs e)
@@ -101,6 +102,11 @@ namespace cliente
                 num = Lista[2].GetNum();
                 Close();
             }
+        }
+
+        private void Acusacion_FormClosing(object sender, FormClosingEventArgs e)
+        {
+          
         }
     }
 }
