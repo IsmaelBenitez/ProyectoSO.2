@@ -37,8 +37,8 @@ namespace cliente
         private void btn_Conectar_Click(object sender, EventArgs e)
         {
             //Establecemos conexión con el servidor
-            IPAddress direc = IPAddress.Parse("169.254.15.179");
-            IPEndPoint ipep = new IPEndPoint(direc, 9070);
+            IPAddress direc = IPAddress.Parse("147.83.117.22");
+            IPEndPoint ipep = new IPEndPoint(direc, 50064);
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
             {
@@ -102,6 +102,8 @@ namespace cliente
                 btn_Enviar.Enabled = false;
                 Grid.Visible = false;
                 btn_Invitar.Visible = false;
+                label7.Visible = false;
+                button1.Visible = false;
 
 
 
@@ -306,19 +308,23 @@ namespace cliente
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try
-            {
-                string Mensaje = "0/";
 
-                byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
-                server.Send(msg);
-                server.Shutdown(SocketShutdown.Both);
-                server.Close();
-                Atender.Abort();
-            }
-            catch
-            {
+            string Mensaje = "0/";
 
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+            if (server != null)
+            {
+                try
+                {
+                    server.Send(msg);
+                    server.Shutdown(SocketShutdown.Both);
+                    server.Close();
+                    Atender.Abort();
+                }
+                catch (System.ObjectDisposedException)
+                {
+                
+                }
             }
         }
         private void AtenderServidor()
@@ -656,7 +662,7 @@ namespace cliente
 
         private void btn_Invitar_Click(object sender, EventArgs e)
         {
-            if (invitados < -1)
+            if (invitados < 2)
                 MessageBox.Show("Se necesitan mínimo tres participantes");
             else
             {
@@ -710,6 +716,8 @@ namespace cliente
             textBox1.Visible = true;
             Grid.Visible = true;
             btn_Invitar.Visible = true;
+            label7.Visible = true;
+            button1.Visible = true;
 
 
 
@@ -738,6 +746,8 @@ namespace cliente
             textBox1.Visible = true;
             Grid.Visible = true;
             btn_Invitar.Visible = true;
+            label7.Visible = true;
+            button1.Visible = true;
         }
         private void PonerLista(string[] trozos)
         {
@@ -827,5 +837,15 @@ namespace cliente
             0, ArrayResultado.Length);
         }
 
+        private void axWindowsMediaPlayer1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            video Form = new video();
+            Form.ShowDialog();
+        }
     }
 }

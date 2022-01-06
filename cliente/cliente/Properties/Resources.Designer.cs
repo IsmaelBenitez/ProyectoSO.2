@@ -73,6 +73,16 @@ namespace cliente.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _1234567890 {
+            get {
+                object obj = ResourceManager.GetObject("1234567890", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap actos {
             get {
                 object obj = ResourceManager.GetObject("actos", resourceCulture);
@@ -276,6 +286,16 @@ namespace cliente.Properties {
         internal static System.Drawing.Bitmap pedro {
             get {
                 object obj = ResourceManager.GetObject("pedro", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap q {
+            get {
+                object obj = ResourceManager.GetObject("q", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

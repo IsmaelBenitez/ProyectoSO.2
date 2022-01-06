@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
- 
+using System.Media;
 
 namespace cliente
 {
@@ -38,6 +38,7 @@ namespace cliente
         int Num;
         string[] chatmensajes = new string[7];
         Boolean room = false;
+        Boolean escogido = false;
         public Partida(Socket server, string[] trozos, string sesion)
         {
             InitializeComponent();
@@ -114,6 +115,8 @@ namespace cliente
             {
                 turno_lbl.Text = "Tu turno!";
                 turno_lbl.ForeColor = Color.Green;
+                SoundPlayer simpleSound = new SoundPlayer(@"sonido.wav");
+                simpleSound.Play();
             }
             else
             {
@@ -499,6 +502,8 @@ namespace cliente
             {
                 turno_lbl.Text = "Tu turno!";
                 turno_lbl.ForeColor = Color.Green;
+                SoundPlayer simpleSound = new SoundPlayer(@"sonido.wav");
+                simpleSound.Play();
             }
             else
             {
@@ -516,30 +521,49 @@ namespace cliente
                 Button cb = (sender as Button);
                 int i = DameJugador(sesion);
                 Boolean Puedes;
-                if (!room)
-                    Puedes = Distancia(cb.Location, Jugadores[i].GetPoint(), dado);
+                if (room && dado == 1)
+                {
+                    Jugadores[i].RefreshLocation(Jugadores[i].GetPoint());
+             
+                    string Mensaje = "10/" + IDp + "/" + sesion + "/" + Jugadores[i].GetPoint().X + "/" + Jugadores[i].GetPoint().Y;
+                    byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                    server.Send(msg);
+                    cola.Enqueue(turno);
+                    turno = cola.Dequeue();
+                    turno_lbl.Text = "Turno de: " + turno;
+                    turno_lbl.ForeColor = Color.Black;
+                    dado = 0;
+                    Dado_btn.Enabled = false;
+                    room = false;
+
+                }
                 else
                 {
-                    Puedes = Distancia(cb.Location, Jugadores[i].GetPoint(), dado - 1);
-                }
-
-                if (Puedes)
-                {
-                    Point Nuevo = new Point(cb.Location.X, cb.Location.Y);
-                    Boolean Libre = CasillaLibre(Nuevo);
-                    if (Libre)
+                    if (!room)
+                        Puedes = Distancia(cb.Location, Jugadores[i].GetPoint(), dado);
+                    else
                     {
-                        Jugadores[i].RefreshLocation(Nuevo);
-                        string Mensaje = "10/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y;
-                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
-                        server.Send(msg);
-                        cola.Enqueue(turno);
-                        turno = cola.Dequeue();
-                        turno_lbl.Text = "Turno de: " + turno;
-                        turno_lbl.ForeColor = Color.Black;
-                        dado = 0;
-                        Dado_btn.Enabled = false;
-                        room = false;
+                        Puedes = Distancia(cb.Location, Jugadores[i].GetPoint(), dado - 1);
+                    }
+
+                    if (Puedes)
+                    {
+                        Point Nuevo = new Point(cb.Location.X, cb.Location.Y);
+                        Boolean Libre = CasillaLibre(Nuevo);
+                        if (Libre)
+                        {
+                            Jugadores[i].RefreshLocation(Nuevo);
+                            string Mensaje = "10/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y;
+                            byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                            server.Send(msg);
+                            cola.Enqueue(turno);
+                            turno = cola.Dequeue();
+                            turno_lbl.Text = "Turno de: " + turno;
+                            turno_lbl.ForeColor = Color.Black;
+                            dado = 0;
+                            Dado_btn.Enabled = false;
+                            room = false;
+                        }
                     }
                 }
             }
@@ -1159,6 +1183,7 @@ namespace cliente
                 string mensaje = "9/aza/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
+                escogido = true;
 
             }
         }
@@ -1169,6 +1194,7 @@ namespace cliente
                 string mensaje = "9/guillem/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
+                escogido = true;
 
             }
         }
@@ -1179,6 +1205,7 @@ namespace cliente
                 string mensaje = "9/ismael/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
+                escogido = true;
 
             }
         }
@@ -1189,6 +1216,7 @@ namespace cliente
                 string mensaje = "9/itziar/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
+                escogido = true;
 
             }
         }
@@ -1199,6 +1227,7 @@ namespace cliente
                 string mensaje = "9/pedro/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
+                escogido = true;
 
             }
         }
@@ -1209,6 +1238,7 @@ namespace cliente
                 string mensaje = "9/victor/" + IDp + "/" + sesion;
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
+                escogido = true;
 
             }
         }
@@ -1307,7 +1337,6 @@ namespace cliente
                 else
                     pic.Location = new Point(575 + (i - 3) * 185, 270);
                 //pic.BringToFront();
-                pic.Click += new EventHandler(Pic_Click);
                 Controls.Add(pic);
                 i++;
             }
@@ -1321,12 +1350,6 @@ namespace cliente
             Cartas_lbl.BringToFront();
             Sol_btn.Visible = true;
             label1.Visible = true;
-        }
-        private void Pic_Click(object sender, EventArgs e)
-        {
-            PictureBox pic = (PictureBox)sender;
-            int j = (int)pic.Tag;
-
         }
         private void AñadeCheckBoxes(Carta Carta)
         {
@@ -1495,6 +1518,8 @@ namespace cliente
                 Dado_btn.Enabled = true;
                 turno_lbl.Text = "Tu turno!";
                 turno_lbl.ForeColor = Color.Green;
+                SoundPlayer simpleSound = new SoundPlayer(@"sonido.wav");
+                simpleSound.Play();
             }
             else
             {
@@ -1588,23 +1613,28 @@ namespace cliente
         }
         public void Partida_FormClosing(object sender, FormClosingEventArgs e)
         {
-            string mensaje = "14/" + IDp + "/" + sesion;
-            foreach (Carta p in MisCartas)
+            if (!escogido)
+                e.Cancel = true;
+            else
             {
-                mensaje = mensaje + "/" + p.GetNum();
-            }
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
-            if (cola.Count > 1)
-            {
-                if (turno == sesion)
+                string mensaje = "14/" + IDp + "/" + sesion;
+                foreach (Carta p in MisCartas)
                 {
-                    turno = cola.Dequeue();
+                    mensaje = mensaje + "/" + p.GetNum();
                 }
-                else
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+                if (cola.Count > 1)
                 {
-                    int i = DameJugador(sesion);
-                    Jugadores.RemoveAt(i);
+                    if (turno == sesion)
+                    {
+                        turno = cola.Dequeue();
+                    }
+                    else
+                    {
+                        int i = DameJugador(sesion);
+                        Jugadores.RemoveAt(i);
+                    }
                 }
             }
         }
@@ -1693,13 +1723,16 @@ namespace cliente
             else
             {
                 int i = DameJugador(nombre);
-                Jugadores.RemoveAt(i);
-                int j = cola.Count;
-                for(int p = 0; p < j; p++)
+                if (i != -1)
                 {
-                    string Jugador = cola.Dequeue();
-                    if (Jugador != nombre)
-                        cola.Enqueue(Jugador);
+                    Jugadores.RemoveAt(i);
+                    int j = cola.Count;
+                    for (int p = 0; p < j; p++)
+                    {
+                        string Jugador = cola.Dequeue();
+                        if (Jugador != nombre)
+                            cola.Enqueue(Jugador);
+                    }
                 }
             }
             if (cola.Count < 1)

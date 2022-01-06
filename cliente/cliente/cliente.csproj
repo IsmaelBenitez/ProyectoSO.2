@@ -75,6 +75,12 @@
     <Compile Include="Solucionar.Designer.cs">
       <DependentUpon>Solucionar.cs</DependentUpon>
     </Compile>
+    <Compile Include="video.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="video.Designer.cs">
+      <DependentUpon>video.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Acusacion.resx">
       <DependentUpon>Acusacion.cs</DependentUpon>
     </EmbeddedResource>
@@ -96,6 +102,9 @@
     </Compile>
     <EmbeddedResource Include="Solucionar.resx">
       <DependentUpon>Solucionar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="video.resx">
+      <DependentUpon>video.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -136,6 +145,7 @@
     <None Include="bin\Debug\termo.png" />
     <None Include="bin\Debug\tijeras.png" />
     <None Include="bin\Debug\veneno.png" />
+    <None Include="Resources\1234567890.png" />
     <Content Include="Resources\barra.png" />
     <Content Include="Resources\cables.png" />
     <Content Include="Resources\cuchillo.png" />
@@ -145,9 +155,29 @@
     <None Include="Resources\fondo4.jpg" />
     <None Include="Resources\fondo5.jpg" />
     <Content Include="Resources\osciloscopio.png" />
+    <None Include="Resources\q.png" />
     <Content Include="Resources\termo.png" />
     <Content Include="Resources\tijeras.png" />
     <Content Include="Resources\veneno.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxWMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

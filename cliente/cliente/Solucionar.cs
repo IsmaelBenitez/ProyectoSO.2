@@ -274,5 +274,20 @@ namespace cliente
             pictureBox27.BackgroundImageLayout = ImageLayout.Stretch;
             enviar_btn.Enabled = true;
         }
+
+        private void pictureBox27_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox26_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox25_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

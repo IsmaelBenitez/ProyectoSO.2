@@ -94,6 +94,7 @@
             // 
             // listBox1
             // 
+            this.listBox1.BackColor = System.Drawing.SystemColors.Window;
             this.listBox1.Font = new System.Drawing.Font("Mongolian Baiti", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 16;
@@ -112,12 +113,14 @@
             // 
             // btn_chat
             // 
+            this.btn_chat.BackColor = System.Drawing.Color.Tan;
+            this.btn_chat.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btn_chat.Location = new System.Drawing.Point(729, 650);
             this.btn_chat.Name = "btn_chat";
             this.btn_chat.Size = new System.Drawing.Size(66, 20);
             this.btn_chat.TabIndex = 28;
             this.btn_chat.Text = "Enviar";
-            this.btn_chat.UseVisualStyleBackColor = true;
+            this.btn_chat.UseVisualStyleBackColor = false;
             this.btn_chat.Visible = false;
             this.btn_chat.Click += new System.EventHandler(this.btn_chat_Click);
             // 
@@ -216,12 +219,14 @@
             // 
             // Sol_btn
             // 
+            this.Sol_btn.BackColor = System.Drawing.Color.Tan;
+            this.Sol_btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.Sol_btn.Location = new System.Drawing.Point(1068, 657);
             this.Sol_btn.Name = "Sol_btn";
             this.Sol_btn.Size = new System.Drawing.Size(84, 23);
             this.Sol_btn.TabIndex = 42;
             this.Sol_btn.Text = "Solucionar";
-            this.Sol_btn.UseVisualStyleBackColor = true;
+            this.Sol_btn.UseVisualStyleBackColor = false;
             this.Sol_btn.Visible = false;
             this.Sol_btn.Click += new System.EventHandler(this.Sol_btn_Click);
             // 

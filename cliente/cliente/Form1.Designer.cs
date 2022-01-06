@@ -53,29 +53,38 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.Grid = new System.Windows.Forms.DataGridView();
             this.btn_Invitar = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Grid)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_Desconectar
             // 
+            this.btn_Desconectar.BackColor = System.Drawing.Color.Tan;
+            this.btn_Desconectar.Cursor = System.Windows.Forms.Cursors.Default;
             this.btn_Desconectar.Enabled = false;
-            this.btn_Desconectar.Location = new System.Drawing.Point(440, 62);
+            this.btn_Desconectar.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_Desconectar.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btn_Desconectar.Location = new System.Drawing.Point(348, 168);
             this.btn_Desconectar.Name = "btn_Desconectar";
             this.btn_Desconectar.Size = new System.Drawing.Size(81, 23);
             this.btn_Desconectar.TabIndex = 0;
             this.btn_Desconectar.Text = "Desconectar";
-            this.btn_Desconectar.UseVisualStyleBackColor = true;
+            this.btn_Desconectar.UseVisualStyleBackColor = false;
             this.btn_Desconectar.Click += new System.EventHandler(this.btn_Desconectar_Click);
             // 
             // btn_Conectar
             // 
-            this.btn_Conectar.Location = new System.Drawing.Point(181, 62);
+            this.btn_Conectar.BackColor = System.Drawing.Color.Tan;
+            this.btn_Conectar.Cursor = System.Windows.Forms.Cursors.Default;
+            this.btn_Conectar.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_Conectar.Location = new System.Drawing.Point(243, 168);
             this.btn_Conectar.Name = "btn_Conectar";
-            this.btn_Conectar.Size = new System.Drawing.Size(75, 23);
+            this.btn_Conectar.Size = new System.Drawing.Size(81, 23);
             this.btn_Conectar.TabIndex = 1;
             this.btn_Conectar.Text = "Conectar";
-            this.btn_Conectar.UseVisualStyleBackColor = true;
+            this.btn_Conectar.UseVisualStyleBackColor = false;
             this.btn_Conectar.Click += new System.EventHandler(this.btn_Conectar_Click);
             // 
             // errorProvider1
@@ -84,30 +93,36 @@
             // 
             // btn_Iniciar_Sesion
             // 
-            this.btn_Iniciar_Sesion.Location = new System.Drawing.Point(224, 259);
+            this.btn_Iniciar_Sesion.BackColor = System.Drawing.Color.Tan;
+            this.btn_Iniciar_Sesion.Cursor = System.Windows.Forms.Cursors.Default;
+            this.btn_Iniciar_Sesion.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_Iniciar_Sesion.Location = new System.Drawing.Point(115, 376);
             this.btn_Iniciar_Sesion.Name = "btn_Iniciar_Sesion";
             this.btn_Iniciar_Sesion.Size = new System.Drawing.Size(75, 23);
             this.btn_Iniciar_Sesion.TabIndex = 2;
             this.btn_Iniciar_Sesion.Text = "Iniciar Sesión";
-            this.btn_Iniciar_Sesion.UseVisualStyleBackColor = true;
+            this.btn_Iniciar_Sesion.UseVisualStyleBackColor = false;
             this.btn_Iniciar_Sesion.Visible = false;
             this.btn_Iniciar_Sesion.Click += new System.EventHandler(this.btn_Iniciar_Sesion_Click);
             // 
             // btn_Registrarse
             // 
-            this.btn_Registrarse.Location = new System.Drawing.Point(373, 259);
+            this.btn_Registrarse.BackColor = System.Drawing.Color.Tan;
+            this.btn_Registrarse.Cursor = System.Windows.Forms.Cursors.Default;
+            this.btn_Registrarse.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_Registrarse.Location = new System.Drawing.Point(264, 376);
             this.btn_Registrarse.Name = "btn_Registrarse";
             this.btn_Registrarse.Size = new System.Drawing.Size(75, 23);
             this.btn_Registrarse.TabIndex = 3;
             this.btn_Registrarse.Text = "Registrarse";
-            this.btn_Registrarse.UseVisualStyleBackColor = true;
+            this.btn_Registrarse.UseVisualStyleBackColor = false;
             this.btn_Registrarse.Visible = false;
             this.btn_Registrarse.Click += new System.EventHandler(this.btn_Registrarse_Click);
             // 
             // Contra1Text
             // 
             this.Contra1Text.HideSelection = false;
-            this.Contra1Text.Location = new System.Drawing.Point(314, 185);
+            this.Contra1Text.Location = new System.Drawing.Point(205, 302);
             this.Contra1Text.MaxLength = 50;
             this.Contra1Text.Name = "Contra1Text";
             this.Contra1Text.Size = new System.Drawing.Size(100, 20);
@@ -118,7 +133,7 @@
             // 
             // nombre1Text
             // 
-            this.nombre1Text.Location = new System.Drawing.Point(314, 135);
+            this.nombre1Text.Location = new System.Drawing.Point(205, 252);
             this.nombre1Text.MaxLength = 50;
             this.nombre1Text.Name = "nombre1Text";
             this.nombre1Text.Size = new System.Drawing.Size(100, 20);
@@ -129,7 +144,8 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(238, 135);
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Location = new System.Drawing.Point(129, 252);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 13);
             this.label1.TabIndex = 6;
@@ -139,7 +155,8 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(221, 188);
+            this.label2.BackColor = System.Drawing.Color.Transparent;
+            this.label2.Location = new System.Drawing.Point(112, 305);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(64, 13);
             this.label2.TabIndex = 7;
@@ -148,7 +165,7 @@
             // 
             // Nombre2Text
             // 
-            this.Nombre2Text.Location = new System.Drawing.Point(314, 119);
+            this.Nombre2Text.Location = new System.Drawing.Point(205, 236);
             this.Nombre2Text.MaxLength = 50;
             this.Nombre2Text.Name = "Nombre2Text";
             this.Nombre2Text.Size = new System.Drawing.Size(100, 20);
@@ -157,7 +174,7 @@
             // 
             // Contra2Text
             // 
-            this.Contra2Text.Location = new System.Drawing.Point(314, 159);
+            this.Contra2Text.Location = new System.Drawing.Point(205, 276);
             this.Contra2Text.MaxLength = 50;
             this.Contra2Text.Name = "Contra2Text";
             this.Contra2Text.Size = new System.Drawing.Size(100, 20);
@@ -167,7 +184,7 @@
             // 
             // Contra3Text
             // 
-            this.Contra3Text.Location = new System.Drawing.Point(314, 214);
+            this.Contra3Text.Location = new System.Drawing.Point(204, 315);
             this.Contra3Text.MaxLength = 50;
             this.Contra3Text.Name = "Contra3Text";
             this.Contra3Text.Size = new System.Drawing.Size(100, 20);
@@ -178,7 +195,8 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(238, 122);
+            this.label3.BackColor = System.Drawing.Color.Transparent;
+            this.label3.Location = new System.Drawing.Point(129, 239);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(47, 13);
             this.label3.TabIndex = 11;
@@ -188,7 +206,8 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(218, 162);
+            this.label4.BackColor = System.Drawing.Color.Transparent;
+            this.label4.Location = new System.Drawing.Point(109, 279);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(67, 13);
             this.label4.TabIndex = 12;
@@ -198,7 +217,8 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(174, 217);
+            this.label5.BackColor = System.Drawing.Color.Transparent;
+            this.label5.Location = new System.Drawing.Point(65, 318);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(111, 13);
             this.label5.TabIndex = 13;
@@ -207,77 +227,87 @@
             // 
             // btn_Registrarse2
             // 
-            this.btn_Registrarse2.Location = new System.Drawing.Point(305, 288);
+            this.btn_Registrarse2.BackColor = System.Drawing.Color.Tan;
+            this.btn_Registrarse2.Cursor = System.Windows.Forms.Cursors.Default;
+            this.btn_Registrarse2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_Registrarse2.Location = new System.Drawing.Point(196, 376);
             this.btn_Registrarse2.Name = "btn_Registrarse2";
             this.btn_Registrarse2.Size = new System.Drawing.Size(75, 23);
             this.btn_Registrarse2.TabIndex = 14;
             this.btn_Registrarse2.Text = "Registrarse";
-            this.btn_Registrarse2.UseVisualStyleBackColor = true;
+            this.btn_Registrarse2.UseVisualStyleBackColor = false;
             this.btn_Registrarse2.Visible = false;
             this.btn_Registrarse2.Click += new System.EventHandler(this.btn_Registrarse2_Click);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(157, 107);
+            this.label6.BackColor = System.Drawing.Color.Transparent;
+            this.label6.Font = new System.Drawing.Font("Mongolian Baiti", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(241, 217);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(456, 25);
+            this.label6.Size = new System.Drawing.Size(189, 32);
             this.label6.TabIndex = 15;
-            this.label6.Text = "Indique el nombre de usuario o el id de partida";
+            this.label6.Text = "  Indique el nombre de \r\nusuario o el id de partida";
             this.label6.Visible = false;
             // 
             // porcentaje
             // 
             this.porcentaje.AutoSize = true;
-            this.porcentaje.Location = new System.Drawing.Point(284, 178);
+            this.porcentaje.BackColor = System.Drawing.Color.Transparent;
+            this.porcentaje.Location = new System.Drawing.Point(244, 296);
             this.porcentaje.Name = "porcentaje";
             this.porcentaje.Size = new System.Drawing.Size(164, 17);
             this.porcentaje.TabIndex = 16;
             this.porcentaje.TabStop = true;
             this.porcentaje.Text = "Dime el porcentje de victorias";
-            this.porcentaje.UseVisualStyleBackColor = true;
+            this.porcentaje.UseVisualStyleBackColor = false;
             this.porcentaje.Visible = false;
             // 
             // Favorito
             // 
             this.Favorito.AutoSize = true;
-            this.Favorito.Location = new System.Drawing.Point(284, 211);
+            this.Favorito.BackColor = System.Drawing.Color.Transparent;
+            this.Favorito.Location = new System.Drawing.Point(245, 328);
             this.Favorito.Name = "Favorito";
             this.Favorito.Size = new System.Drawing.Size(147, 17);
             this.Favorito.TabIndex = 17;
             this.Favorito.TabStop = true;
             this.Favorito.Text = "Dime el personaje favorito";
-            this.Favorito.UseVisualStyleBackColor = true;
+            this.Favorito.UseVisualStyleBackColor = false;
             this.Favorito.Visible = false;
             // 
             // ganador
             // 
             this.ganador.AutoSize = true;
-            this.ganador.Location = new System.Drawing.Point(284, 240);
+            this.ganador.BackColor = System.Drawing.Color.Transparent;
+            this.ganador.Location = new System.Drawing.Point(245, 357);
             this.ganador.Name = "ganador";
             this.ganador.Size = new System.Drawing.Size(163, 17);
             this.ganador.TabIndex = 18;
             this.ganador.TabStop = true;
             this.ganador.Text = "Dime el ganador de la partida";
-            this.ganador.UseVisualStyleBackColor = true;
+            this.ganador.UseVisualStyleBackColor = false;
             this.ganador.Visible = false;
             // 
             // btn_Enviar
             // 
+            this.btn_Enviar.BackColor = System.Drawing.Color.Tan;
+            this.btn_Enviar.Cursor = System.Windows.Forms.Cursors.Default;
             this.btn_Enviar.Enabled = false;
-            this.btn_Enviar.Location = new System.Drawing.Point(327, 277);
+            this.btn_Enviar.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_Enviar.Location = new System.Drawing.Point(291, 392);
             this.btn_Enviar.Name = "btn_Enviar";
             this.btn_Enviar.Size = new System.Drawing.Size(75, 23);
             this.btn_Enviar.TabIndex = 19;
             this.btn_Enviar.Text = "Enviar";
-            this.btn_Enviar.UseVisualStyleBackColor = true;
+            this.btn_Enviar.UseVisualStyleBackColor = false;
             this.btn_Enviar.Visible = false;
             this.btn_Enviar.Click += new System.EventHandler(this.btn_Enviar_Click);
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(314, 145);
+            this.textBox1.Location = new System.Drawing.Point(279, 262);
             this.textBox1.MaxLength = 50;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 20);
@@ -288,9 +318,9 @@
             // Grid
             // 
             this.Grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.Grid.Location = new System.Drawing.Point(21, 122);
+            this.Grid.Location = new System.Drawing.Point(60, 217);
             this.Grid.Name = "Grid";
-            this.Grid.Size = new System.Drawing.Size(130, 109);
+            this.Grid.Size = new System.Drawing.Size(130, 157);
             this.Grid.TabIndex = 21;
             this.Grid.Visible = false;
             this.Grid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellContentClick);
@@ -298,20 +328,53 @@
             // 
             // btn_Invitar
             // 
-            this.btn_Invitar.Location = new System.Drawing.Point(48, 259);
+            this.btn_Invitar.BackColor = System.Drawing.Color.Tan;
+            this.btn_Invitar.Cursor = System.Windows.Forms.Cursors.Default;
+            this.btn_Invitar.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btn_Invitar.Location = new System.Drawing.Point(90, 392);
             this.btn_Invitar.Name = "btn_Invitar";
             this.btn_Invitar.Size = new System.Drawing.Size(75, 23);
             this.btn_Invitar.TabIndex = 22;
             this.btn_Invitar.Text = "Invitar";
-            this.btn_Invitar.UseVisualStyleBackColor = true;
+            this.btn_Invitar.UseVisualStyleBackColor = false;
             this.btn_Invitar.Visible = false;
             this.btn_Invitar.Click += new System.EventHandler(this.btn_Invitar_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.BackColor = System.Drawing.Color.Transparent;
+            this.label7.Font = new System.Drawing.Font("Mongolian Baiti", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(37, 171);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(185, 32);
+            this.label7.TabIndex = 23;
+            this.label7.Text = "Doble click para invitar \r\n       a una partida:";
+            this.label7.Visible = false;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.Tan;
+            this.button1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button1.Location = new System.Drawing.Point(190, 392);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(81, 23);
+            this.button1.TabIndex = 24;
+            this.button1.Text = "Tutorial";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Visible = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = global::cliente.Properties.Resources.q;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.btn_Invitar);
             this.Controls.Add(this.Grid);
             this.Controls.Add(this.textBox1);
@@ -372,6 +435,8 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.DataGridView Grid;
         private System.Windows.Forms.Button btn_Invitar;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button button1;
     }
 }
 

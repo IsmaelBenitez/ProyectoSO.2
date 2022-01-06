@@ -76,7 +76,7 @@ namespace cliente
                 case "victor":
                     Posicion= new Point(475, 475);
                     pic.Image = new Bitmap("fichavictor.png");
-                    pic.BackColor = Color.Gold;
+                    pic.BackColor = Color.Bisque;
                     pic.Location = new Point(Posicion.X + 25 / 2, Posicion.Y + 25 / 2); ;
                     break;
             }
@@ -116,6 +116,10 @@ namespace cliente
         public void SetPosicion(Point Punto)
         {
             Posicion = Punto;
+        }
+        public Point GetPosition()
+        {
+            return Posicion;
         }
     }
 }
