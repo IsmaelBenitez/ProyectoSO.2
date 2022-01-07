@@ -661,6 +661,11 @@ namespace cliente
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
                         int lugar = 15;
+                        Carta Asesino = new Carta(asesino);
+                        Carta Lugar = new Carta(lugar);
+                        Carta Arma = new Carta(arma);
+                        string mensaje = "Tu acusacion: asesino: " + Asesino.GetNombre() + " arma: " + Arma.GetNombre() + " lugar: " + Lugar.GetNombre();
+                        EscribeMensaje(mensaje);
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
@@ -734,6 +739,11 @@ namespace cliente
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
                         int lugar = 16;
+                        Carta Asesino = new Carta(asesino);
+                        Carta Lugar = new Carta(lugar);
+                        Carta Arma = new Carta(arma);
+                        string mensaje = "Tu acusacion: asesino: " + Asesino.GetNombre() + " arma: " + Arma.GetNombre() + " lugar: " + Lugar.GetNombre();
+                        EscribeMensaje(mensaje);
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
@@ -807,6 +817,11 @@ namespace cliente
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
                         int lugar = 17;
+                        Carta Asesino = new Carta(asesino);
+                        Carta Lugar = new Carta(lugar);
+                        Carta Arma = new Carta(arma);
+                        string mensaje = "Tu acusacion: asesino: " + Asesino.GetNombre() + " arma: " + Arma.GetNombre() + " lugar: " + Lugar.GetNombre();
+                        EscribeMensaje(mensaje);
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
@@ -871,6 +886,11 @@ namespace cliente
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
                         int lugar = 17;
+                        Carta Asesino = new Carta(asesino);
+                        Carta Lugar = new Carta(lugar);
+                        Carta Arma = new Carta(arma);
+                        string mensaje = "Tu acusacion: asesino: " + Asesino.GetNombre() + " arma: " + Arma.GetNombre() + " lugar: " + Lugar.GetNombre();
+                        EscribeMensaje(mensaje);
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
@@ -943,6 +963,11 @@ namespace cliente
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
                         int lugar = 18;
+                        Carta Asesino = new Carta(asesino);
+                        Carta Lugar = new Carta(lugar);
+                        Carta Arma = new Carta(arma);
+                        string mensaje = "Tu acusacion: asesino: " + Asesino.GetNombre() + " arma: " + Arma.GetNombre() + " lugar: " + Lugar.GetNombre();
+                        EscribeMensaje(mensaje);
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
@@ -1015,6 +1040,11 @@ namespace cliente
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
                         int lugar = 14;
+                        Carta Asesino = new Carta(asesino);
+                        Carta Lugar = new Carta(lugar);
+                        Carta Arma = new Carta(arma);
+                        string mensaje = "Tu acusacion: asesino: " + Asesino.GetNombre() + " arma: " + Arma.GetNombre() + " lugar: " + Lugar.GetNombre();
+                        EscribeMensaje(mensaje);
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
@@ -1088,6 +1118,11 @@ namespace cliente
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
                         int lugar = 19;
+                        Carta Asesino = new Carta(asesino);
+                        Carta Lugar = new Carta(lugar);
+                        Carta Arma = new Carta(arma);
+                        string mensaje = "Tu acusacion: asesino: " + Asesino.GetNombre() + " arma: " + Arma.GetNombre() + " lugar: " + Lugar.GetNombre();
+                        EscribeMensaje(mensaje);
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
@@ -1161,6 +1196,11 @@ namespace cliente
                         int asesino = listBox1.SelectedIndex;
                         int arma = listBox2.SelectedIndex + 6;
                         int lugar = 20;
+                        Carta Asesino = new Carta(asesino);
+                        Carta Lugar = new Carta(lugar);
+                        Carta Arma = new Carta(arma);
+                        string mensaje = "Tu acusacion: asesino: " + Asesino.GetNombre() + " arma: " + Arma.GetNombre() + " lugar: " + Lugar.GetNombre();
+                        EscribeMensaje(mensaje);
                         string Mensaje = "11/" + IDp + "/" + sesion + "/" + Nuevo.X + "/" + Nuevo.Y + "/" + asesino + "/" + arma + "/" + lugar;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
                         server.Send(msg);
@@ -1719,6 +1759,11 @@ namespace cliente
                 turno = cola.Dequeue();
                 turno_lbl.Text="Turno de: " + turno;
                 turno_lbl.ForeColor = Color.Black;
+                if (turno == sesion)
+                {
+                    Dado_btn.Enabled = true;
+                }
+
             }
             else
             {

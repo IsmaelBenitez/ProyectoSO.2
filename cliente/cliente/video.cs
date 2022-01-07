@@ -19,7 +19,7 @@ namespace cliente
 
         private void video_Load(object sender, EventArgs e)
         {
-            axWindowsMediaPlayer1.URL = @"C:\Users\ismae\Desktop\video\Video_V2.mp4";
+            axWindowsMediaPlayer1.URL = @"Tutorial.mp4";
         }
 
         private void video_FormClosing(object sender, FormClosingEventArgs e)

@@ -510,9 +510,7 @@ namespace cliente
                             i = EncontrarForm(ID);
                             if (i != -1)
                             {
-                                j = 1;
-                                
-                                    
+                                j = 1;  
                                 while (2*j < trozos.Count())
                                 {
                                     string texto;
@@ -520,7 +518,6 @@ namespace cliente
                                     {
                                         texto = trozos[2 * j] + " no enseña ninguna carta";
                                         formularios[i].RecibirMensaje(texto);
-
                                     }
                                     else
                                     {
@@ -528,7 +525,6 @@ namespace cliente
                                         formularios[i].RecibirMensaje(texto);
                                         break;
                                     }
-                                    
                                     j++;
                                 }
                                 formularios[i].acabaAcusacion("a");
