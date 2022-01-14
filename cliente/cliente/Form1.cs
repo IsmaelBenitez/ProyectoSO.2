@@ -325,6 +325,12 @@ namespace cliente
                 {
                 
                 }
+                catch (System.Net.Sockets.SocketException)
+                {
+                    MessageBox.Show("Lo sentimos, el servidor ha fallado");
+                    
+                }
+
             }
         }
         private void AtenderServidor()
@@ -588,8 +594,10 @@ namespace cliente
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
-
+                    MessageBox.Show("Lo sentimos, el servidor ha fallado");
+                    Close();
                 }
+
             }
         }
 
