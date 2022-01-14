@@ -592,12 +592,7 @@ namespace cliente
                 {
                     continue;
                 }
-                catch (System.Net.Sockets.SocketException)
-                {
-                    MessageBox.Show("Lo sentimos, el servidor ha fallado");
-                    Close();
-                }
-
+   
             }
         }
 
