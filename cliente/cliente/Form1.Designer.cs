@@ -55,6 +55,7 @@
             this.btn_Invitar = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Grid)).BeginInit();
             this.SuspendLayout();
@@ -66,7 +67,7 @@
             this.btn_Desconectar.Enabled = false;
             this.btn_Desconectar.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btn_Desconectar.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btn_Desconectar.Location = new System.Drawing.Point(348, 168);
+            this.btn_Desconectar.Location = new System.Drawing.Point(349, 150);
             this.btn_Desconectar.Name = "btn_Desconectar";
             this.btn_Desconectar.Size = new System.Drawing.Size(81, 23);
             this.btn_Desconectar.TabIndex = 0;
@@ -79,7 +80,7 @@
             this.btn_Conectar.BackColor = System.Drawing.Color.Tan;
             this.btn_Conectar.Cursor = System.Windows.Forms.Cursors.Default;
             this.btn_Conectar.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btn_Conectar.Location = new System.Drawing.Point(243, 168);
+            this.btn_Conectar.Location = new System.Drawing.Point(244, 150);
             this.btn_Conectar.Name = "btn_Conectar";
             this.btn_Conectar.Size = new System.Drawing.Size(81, 23);
             this.btn_Conectar.TabIndex = 1;
@@ -317,10 +318,14 @@
             // 
             // Grid
             // 
+            this.Grid.BackgroundColor = System.Drawing.Color.Tan;
+            this.Grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.Grid.Location = new System.Drawing.Point(60, 217);
+            this.Grid.ColumnHeadersVisible = false;
+            this.Grid.Location = new System.Drawing.Point(76, 217);
             this.Grid.Name = "Grid";
-            this.Grid.Size = new System.Drawing.Size(130, 157);
+            this.Grid.RowHeadersVisible = false;
+            this.Grid.Size = new System.Drawing.Size(101, 150);
             this.Grid.TabIndex = 21;
             this.Grid.Visible = false;
             this.Grid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellContentClick);
@@ -345,7 +350,7 @@
             this.label7.AutoSize = true;
             this.label7.BackColor = System.Drawing.Color.Transparent;
             this.label7.Font = new System.Drawing.Font("Mongolian Baiti", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(37, 171);
+            this.label7.Location = new System.Drawing.Point(42, 171);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(185, 32);
             this.label7.TabIndex = 23;
@@ -366,6 +371,20 @@
             this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.Color.Tan;
+            this.button2.Cursor = System.Windows.Forms.Cursors.Default;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button2.Location = new System.Drawing.Point(291, 179);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(81, 23);
+            this.button2.TabIndex = 25;
+            this.button2.Text = "Baja";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Visible = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -373,6 +392,7 @@
             this.BackgroundImage = global::cliente.Properties.Resources.q;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.btn_Invitar);
@@ -437,6 +457,7 @@
         private System.Windows.Forms.Button btn_Invitar;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }
 

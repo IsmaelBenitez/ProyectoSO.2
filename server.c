@@ -48,15 +48,18 @@ TPartidas tabla;
 int Baraja[20];
 //Funciones para inicializar
 void inicializar(TPartidas tabla){
+	//Inicializa la tabla de partidas
 	int i;
 	for(i=0; i<100; i++)
 		tabla[i].ocupado = 0;
 }
 void InciarAcusacion(TPartidas tabla,int Id, int socket){
+	//Inicia la lista de una acusacion
 	tabla[Id].Acusaciones.num=0;
 	tabla[Id].Acusaciones.socket=socket;
 }
 void InicializarBaraja(int baraja[20]){
+	//Inicializa la baraja 
 	int i=0;
 	while (i<21){
 		baraja[i]=i;
@@ -65,7 +68,11 @@ void InicializarBaraja(int baraja[20]){
 }
 //Estructuras y funciones para la baraja
 int RepartirCartasGanadoras(Partida *partida, int cont,int Id){
-	
+	/*Elige aleatoriamente la cmbinacin ganadora de dicha partida
+	Parametros: Partida partida,
+	int cont: contador ded las cartas que quedan en la baraja
+	Int Id: Id de la partida en cuestion
+	*/
 	srand(time(0));
 	int i = rand() %6; // Personas
 	int j = rand() %8; //Armas
@@ -85,6 +92,11 @@ int RepartirCartasGanadoras(Partida *partida, int cont,int Id){
 
 }
 int RepartirCartasPersonales(Partida *partida, int cont, int Id){
+	/* Reparte las cartas que le tocan a cada uno en base a un calculo  de cuantas deben ser
+	Parametros:  Partida partida
+	int cont: Numeros de cartas restantes en la Baraja
+	int Id: Id de la partida en cuestion
+	*/
 	int jug = partida->Jugadores.num;
 	div_t resultadoDeLaDivision=div(18,jug);
 	int cartas = resultadoDeLaDivision.quot; 
@@ -110,6 +122,10 @@ int RepartirCartasPersonales(Partida *partida, int cont, int Id){
 	}
 }
 int RepartirCartasSobrantes(Partida *partida, int cont, int Id){
+	/* Envia las cartas que han sobado tras repartir todo
+	Parametros : Partida partida
+	int cont: cartas que quedan en la baraja
+	*/
 	int n=0;
 	int sum=0;
 	char sobrantes[200];
@@ -129,6 +145,12 @@ int RepartirCartasSobrantes(Partida *partida, int cont, int Id){
 	
 }
 int SacarCartas(int baraja[20],int i,int cont){
+	/*Esta funcion se encarga de sacar la carta que ya ha sido repartida de la baraja, con tal de no volverla a RepartirCartasGanadoras
+	Parametros:
+	int baraja: la baraja de la que debe sacr la carta
+	int i : posicion de la carta que debe Sacar
+	int cont: contador de las cartas que quedan
+	*/
 	while (i<20){
 		baraja[i]=baraja[i+1];
 		i++;
@@ -142,7 +164,12 @@ int SacarCartas(int baraja[20],int i,int cont){
 
 //Funciones para actuar sobre la lista de conectados
 int AnadirConectado (ListaConectados *lista, char nombre[60], int socket){
-
+	/* Añade un usuario a la lista de conectados
+	Parametros
+	ListaConectados lista: a donde se debe añadir
+	char nombre: de la  persona a añadir
+	init socket: de la persona a añadir
+	*/
 	if (lista->num == 100)
 	{
 		
@@ -195,7 +222,7 @@ int DamePos (ListaConectados *lista, char nombre[20]){
 }
 int Elimina(ListaConectados *lista, char nombre[20]){
 	//Devuelve el socket o -1 si no estÃ¡ en la lista
-
+	// intenta eliminar de lista a usuario nombre
 	int pos = DamePos (lista,nombre);
 	if (pos==-1)
 		return -1;
@@ -244,6 +271,8 @@ void DameTodosSockets ( ListaConectados *lista, char nombres[80], char *sockets[
 	}
 }
 void DameConectado(int socket,char *nombre[20]){
+	/* Devuelve el nombre del conectado que tenga el socket que se da como parametro
+	*/
 	int i=0;
 	int encontrado=0;
 	while (i<Lista.num && !encontrado){
@@ -258,18 +287,22 @@ void DameConectado(int socket,char *nombre[20]){
 	}
 }
 void AnadirAvatar(ListaConectados *lista, char sesion[20],char avatar[20]){
+	/* Añade a la lista el avatar seleccionado (avatar) y por quien ha sido elegido(sesion)
+	*/
 	int i = DamePos (lista, sesion);
 	printf("i=%d\n",i);
 	strcpy(lista->conectados[i].avatar,avatar);
 	lista->avatares++;
 }
 void EliminarTodos(ListaConectados *lista){
+	//Elimina a todo el mundo de la lista
 	while (lista->num>0){
 		Elimina(lista,lista->conectados[0].nombre);
 	}
 }
 //Funciones para enviar notificaciones
 void EnviarLista (){
+	//Envia en modo notificacion la lista de conectados
 	char notificacion[300];
 	char conectados[300];
 	DameConectados (&Lista,conectados);
@@ -281,6 +314,7 @@ void EnviarLista (){
 		write (Lista.conectados[j].socket,notificacion, strlen(notificacion));
 }
 void EnviarInvitacion(char nombre[20],int socket,int Id){
+	//Envia una una invitacion a la persona con el nombre indicado 
 	int i = DameSocket (nombre);
 	char notificacion[200];
 	int j=0;
@@ -300,6 +334,9 @@ void EnviarInvitacion(char nombre[20],int socket,int Id){
 	
 }
 void EmpezarPartida(int Id){
+	/* Envia en modo notificacion que la partida ya esta lista para EmpezarPartida
+	Parametro: int Id de la partida a EmpezarPartida
+	*/
 	int i=0;
 	char notificacion[200];
 	sprintf(notificacion,"8/%d",tabla[Id].Jugadores.num);
@@ -317,6 +354,7 @@ void EmpezarPartida(int Id){
 	}
 }
 void EnviarMensaje(int Id,char nombre[20],char mensaje[100]){
+	/* Envia en modo notificacion de la partida Id el mensaje proveniente del chat */
 	char notificacion[200];
 	sprintf(notificacion,"9/%d/%s: %s",Id,nombre,mensaje);
 	int i=0;
@@ -326,6 +364,7 @@ void EnviarMensaje(int Id,char nombre[20],char mensaje[100]){
 	}
 }
 void EnviarAvatar(int Id,char sesion[20],char avatar[20]){
+	/* Envia en modo notificacion de la partida Id, el avatar seleccionado y por quien*/
 	char notificacion[200];
 	sprintf(notificacion,"10/%d/%s/%s",Id,sesion,avatar);
 	printf("%s\n",notificacion);
@@ -336,6 +375,7 @@ void EnviarAvatar(int Id,char sesion[20],char avatar[20]){
 	}
 }
 void EnviarMovimiento(int Id,char sesion[20],int x,int y,int socket){
+	/* Envia en modo notificacio en la partida Id, las nuevas posiciones y i x y quien se ha movido*/
 	char notificacion[200];
 	sprintf(notificacion,"14/%d/%s/%d/%d",Id,sesion,x,y);
 	printf("%s\n",notificacion);
@@ -349,6 +389,7 @@ void EnviarMovimiento(int Id,char sesion[20],int x,int y,int socket){
 	
 }
 void EnviarAcusacion(int Id,char sesion[20],int x,int y,int socket,int asesino,int arma,int lugar){
+	// Envia en modo de notificación en la partida Id el movimiento realizado (x,y) y la acusacion realizada (asesino,arma,lugar)
 	char notificacion[200];
 	sprintf(notificacion,"15/%d/%s/%d/%d/%d/%d/%d",Id,sesion,x,y,asesino,arma,lugar);
 	printf("%s\n",notificacion);
@@ -361,6 +402,7 @@ void EnviarAcusacion(int Id,char sesion[20],int x,int y,int socket,int asesino,i
 	}
 }
 void ResponderAcusacion(ListaAcusaciones *lista,int Id){
+	//Envia unicamente a quien habia hecho la acusacion la resolucin de la misma 
 	char Notificacion[200];
 	char Notificacion2[200];
 	sprintf(Notificacion,"16/%d",Id);
@@ -383,6 +425,7 @@ void ResponderAcusacion(ListaAcusaciones *lista,int Id){
 	}
 }
 void EnviarSalirPartida(int Id,char sesion[20],int socket,char cartas[200],int cont){
+	//Envia en modo de notificación quien ha abandonado la partida y cuales eran sus cartas
 	char Notificacion[200];
 	sprintf(Notificacion,"18/%d/%s/%d%s",Id,sesion,cont,cartas);
 	for(int i=0;i<tabla[Id].Jugadores.num;i++){
@@ -392,6 +435,7 @@ void EnviarSalirPartida(int Id,char sesion[20],int socket,char cartas[200],int c
 	}
 }
 void EnviarGanador(int Id,char sesion[20],int socket){
+	//Evia en modo notificacion de la partida quien ha sido el ganador de la misma
 	char Notificacion[200];
 	sprintf(Notificacion,"19/%d/%s",Id,sesion);
 	for(int i=0;i<tabla[Id].Jugadores.num;i++){
@@ -403,7 +447,7 @@ void EnviarGanador(int Id,char sesion[20],int socket){
 
 //Funciones para trabajr sobre las listas de Acusaciones
 void AnadirRespuestaAcusacion( ListaAcusaciones *lista, char nombre[60], int socket,int carta){
-	
+	//Acumula las respuesta que se van sucediendo tras iniciar una acusacion
 	if (lista->num == 100)
 	{		
 		return -1;
@@ -421,7 +465,7 @@ void AnadirRespuestaAcusacion( ListaAcusaciones *lista, char nombre[60], int soc
 
 //Thread para atender peticiones de los clientes
 void *AtenderCliente(void *socket) {
-
+	//Es el hilo que se encarga de recibir los mensajes provinientes de los clientes
 
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
@@ -795,6 +839,19 @@ void *AtenderCliente(void *socket) {
 			pthread_mutex_unlock(&mutex);
 						
 		}
+		else if (codigo ==16){
+			char nombre[50];
+			p=strtok(NULL,"/");
+			strcpy(nombre,p);
+			int i=EliminaBBDD(nombre);
+			printf("%d\n",i);
+			if(i==-1){
+				write (sock_conn,"20/-1", strlen("20/-1"));
+			}
+			else
+			   write (sock_conn,"20/1", strlen("20/1"));
+			
+		}
 		
 	
 	}
@@ -811,6 +868,8 @@ void *AtenderCliente(void *socket) {
 }
 //Funciones para atender las peticiones del server a la base de datos;
 int EstaRegistrado(char nombre[60],char contrasena[60]){
+	//REvisa si el usuario esta registrado en la base de datos.
+	//Devuelve 0 en caso  contrario
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -837,6 +896,8 @@ int EstaRegistrado(char nombre[60],char contrasena[60]){
 		return 1;
 }
 int Registrar(char nombre[60],char contrasena[60]){
+	//Registra si es posible al nueo usuario
+	//Devuelve 0 si no es posible registrarlo
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -886,6 +947,7 @@ int Registrar(char nombre[60],char contrasena[60]){
 }
 
 void PorcentajeVictorias(char nombre[60],char *solucion[10]){
+	//Devuelve el porcentage de victorias del usuario nombre
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -938,6 +1000,7 @@ void PorcentajeVictorias(char nombre[60],char *solucion[10]){
 	sprintf(solucion,"3/%.2f",porcentaje);
 }
 void JugadorFavorito(char nombre[60],char *avatar[60]){
+	//Devuelve el avatar mas jugad por usuario especificado
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -1008,6 +1071,7 @@ void JugadorFavorito(char nombre[60],char *avatar[60]){
 	}
 }
 void GanadorPartida(char Identificador[60],char *nombre[60]){
+	//Devuelve quien fue el ganador de la partida con ID indicado
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -1039,6 +1103,7 @@ void GanadorPartida(char Identificador[60],char *nombre[60]){
 	}
 }
 int DameID(){
+	//Devuelve cual debe ser el Id del proximo jugador en registrarse
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -1064,6 +1129,7 @@ int DameID(){
 	}
 }
 int DameIDJ(char sesion[20]){
+	//Devuelve cual es el identificador de un jugado en cuestion
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -1088,6 +1154,7 @@ int DameIDJ(char sesion[20]){
 	}
 }
 void PonPartida(int Id){
+	//Añade la partido con Id indicado a la base de datos
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -1105,6 +1172,7 @@ void PonPartida(int Id){
 	}
 }
 void PonParticipacion(int Id ,char sesion[20],char avatar[20]){
+	// Añade la participacion de un jugador en una partida concreta(Id), con el avatar que ha jugado en la base de datos
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -1124,6 +1192,7 @@ void PonParticipacion(int Id ,char sesion[20],char avatar[20]){
 	
 
 void PonGanador(int Id,char sesion[20]){
+	//Añade quien ha sido el  ganador de dicha partida a la base de datos
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -1140,6 +1209,7 @@ void PonGanador(int Id,char sesion[20]){
 	}
 }
 void PonDuracion(int Id,int tiempo){
+	//Añade la duracion de la partida  a la base de datos
 	int err;
 	// Estructura especial para almacenar resultados de consultas 
 	MYSQL_RES *resultado;
@@ -1153,6 +1223,103 @@ void PonDuracion(int Id,int tiempo){
 		exit (1);
 	}
 }
+int EliminaBBDD(char nombre[50]){
+	//Elimina los datos de un jugador de la base de datos
+	printf("Entro en la funcion\n");
+	int IdentificadorJugador;
+	int err;
+	// Estructura especial para almacenar resultados de consultas 
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	char consulta[500];
+	sprintf(consulta,"SELECT Jugador.Identificador,Partida.Identificador FROM Jugador,Partida WHERE Jugador.Nombre='%s' AND Partida.Ganador=Jugador.Identificador",nombre);
+	printf("Consulta1: %s\n",consulta);
+	err=mysql_query (conn, consulta);
+	if (err!=0) {
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		return -1;
+		exit (1);
+		
+	}
+	resultado = mysql_store_result (conn);
+	row = mysql_fetch_row (resultado);
+		if ( row != NULL){
+		printf("Resultado del Id: %s,\n",row[0]);
+		if(row!=NULL){
+			printf("entro en el if\n");
+			IdentificadorJugador=atoi(row[0]);
+			char consulta2[200];
+
+			printf("row[1]: %s\n ",row[1]);
+			sprintf(consulta2,"DELETE FROM Participacion WHERE Id_P=%s",row[1]);
+			printf("consulta2 primera parte: %s",consulta2);
+			row = mysql_fetch_row (resultado);
+			while (row!=NULL){
+				printf("row[1]: %s\n ",row[1]);
+				sprintf(consulta2,"%s OR Id_P=%s",consulta2,row[1]);
+				row = mysql_fetch_row (resultado);
+			}
+			printf("consulta2: %s",consulta2);
+			err=mysql_query (conn, consulta2);
+			if (err!=0) {
+				printf ("Error al consultar datos de la base %u %s\n",
+						mysql_errno(conn), mysql_error(conn));
+				return -1;
+					exit (1);
+				
+			}
+		}
+		else{
+			char consultax[200];
+			sprintf(consultax,"SELECT Identificador FROM Jugador WHERE Nombre='%s'",nombre);
+			err=mysql_query (conn, consultax);
+			if (err!=0) {
+				printf ("Error al consultar datos de la base %u %s\n",
+						mysql_errno(conn), mysql_error(conn));
+				return -1;
+				exit (1);
+				resultado = mysql_store_result (conn);
+				row = mysql_fetch_row (resultado);
+				IdentificadorJugador=atoi(row[0]);
+			
+		}
+		char consulta3[500];
+		sprintf(consulta3,"DELETE FROM Participacion WHERE Id_J=%d",IdentificadorJugador);
+		err=mysql_query (conn, consulta3);
+		if (err!=0) {
+			printf ("Error al consultar datos de la base %u %s\n",
+					mysql_errno(conn), mysql_error(conn));
+			return -1;
+				exit (1);
+			
+		}
+		char consulta4[200];
+		sprintf(consulta4,"DELETE FROM Partida WHERE Ganador=%d",IdentificadorJugador);
+		err=mysql_query (conn, consulta4);
+		if (err!=0) {
+			printf ("Error al consultar datos de la base %u %s\n",
+					mysql_errno(conn), mysql_error(conn));
+			return -1;
+				exit (1);
+			
+		}
+		char consulta5[200];
+		sprintf(consulta5,"DELETE FROM Jugador WHERE Identificador=%d",IdentificadorJugador);
+		err=mysql_query (conn, consulta5);
+		if (err!=0) {
+			printf ("Error al consultar datos de la base %u %s\n",
+					mysql_errno(conn), mysql_error(conn));
+			return -1;
+				exit (1);
+			
+		}
+		return 1;
+	}
+		}
+	else
+	   return -1;
+}
 
 //MAIN DEL SERVER
 int main(int argc, char *argv[]){
@@ -1165,7 +1332,7 @@ int main(int argc, char *argv[]){
 		exit (1);
 	}
 	//inicializar la conexion con la base de datos
-	conn = mysql_real_connect (conn, "localhost","root", "mysql", "BBDD",0, NULL, 0);
+	conn = mysql_real_connect (conn, "shiva2.upc.es","root", "mysql", "T5BBDD",0, NULL, 0);
 	if (conn==NULL) {
 		printf ("Error al inicializar la conexiï¿ƒï¾³n: %u %s\n", 
 				mysql_errno(conn), mysql_error(conn));
@@ -1182,7 +1349,7 @@ int main(int argc, char *argv[]){
 	memset(&serv_adr, 0, sizeof(serv_adr));// inicialitza a zero serv_addr
 	serv_adr.sin_family = AF_INET;
 	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_adr.sin_port = htons(9070);
+	serv_adr.sin_port = htons(50064);
 	if (bind(sock_listen, (struct sockaddr *) &serv_adr, sizeof(serv_adr)) < 0)
 		printf ("Error al bind");
 	if (listen(sock_listen, 3) < 0)

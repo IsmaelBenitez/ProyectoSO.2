@@ -48,3 +48,4 @@ C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\Interop.WMPLib.dll
 C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\AxInterop.WMPLib.dll
 C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.csproj.ResolveComReference.cache
 C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.video.resources
+C:\share\ProyectoSO.2\cliente\cliente\obj\Debug\cliente.Fin.resources

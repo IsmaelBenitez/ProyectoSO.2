@@ -25,6 +25,9 @@ namespace cliente
         }
         private void ActivarArmas()
         {
+            /*
+             * Hace que las armas pasen a estar disponibles para seleccionarlas
+             */
             label4.Visible = true;
 
             pictureBox14.Visible = true;
@@ -53,6 +56,8 @@ namespace cliente
         }
         private void ActivarLugares()
         {
+            /* Hace que los ,lugares pasen a estar disponibles para elgir
+             */
             label2.Visible = true;
 
             pictureBox21.Visible = true;
@@ -77,6 +82,8 @@ namespace cliente
             pictureBox23.Enabled = true;
         }
 
+        /* Funciones pictureBOX_Click, al clicar un picture box, se selecciona como la opcion de solucion y se muestra como tal
+         */
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             solucion[0] = 0;

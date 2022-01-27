@@ -36,6 +36,10 @@ namespace cliente
 
         private void btn_Conectar_Click(object sender, EventArgs e)
         {
+            /*
+             Boton conectar:   Se iniciará la conexión con el servidor y  apareceran los objetos para iniciar sesión 
+            y se iniciará el thread de atender servidor
+             */
             //Establecemos conexión con el servidor
             IPAddress direc = IPAddress.Parse("147.83.117.22");
             IPEndPoint ipep = new IPEndPoint(direc, 50064);
@@ -68,6 +72,12 @@ namespace cliente
 
         private void btn_Desconectar_Click(object sender, EventArgs e)
         {
+            /*
+             Boton desconectar:Se envia al servidor el mensaje de desconexión, Desaparecen todos los objetos de inicio de sesion, registrarse o consultas.
+            Se elimina la conexion a socket y se aborta el thread del servidor
+            Se reinicia la lista de invitados
+             Mensaje a enviar : 0/
+             */
             try
             {
                 errorProvider1.SetError(btn_Desconectar, string.Empty);
@@ -104,6 +114,8 @@ namespace cliente
                 btn_Invitar.Visible = false;
                 label7.Visible = false;
                 button1.Visible = false;
+                button2.Visible = false;
+
 
 
 
@@ -130,6 +142,9 @@ namespace cliente
 
         private void nombre1Text_TextChanged(object sender, EventArgs e)
         {
+            /*
+             * Funcion para deshabilitar el botón en caso de que alguno de los datos no este lleno
+             */
             if (Text != string.Empty && Contra1Text.Text != string.Empty)
                 btn_Iniciar_Sesion.Enabled = true;
             else
@@ -139,6 +154,9 @@ namespace cliente
 
         private void Contra1Text_TextChanged(object sender, EventArgs e)
         {
+            /*
+             * Funcion para deshabilitar el botón en caso de que alguno de los datos no este lleno
+             */
             if (Text != string.Empty && nombre1Text.Text != string.Empty)
                 btn_Iniciar_Sesion.Enabled = true;
             else
@@ -147,6 +165,10 @@ namespace cliente
 
         private void btn_Iniciar_Sesion_Click(object sender, EventArgs e)
         {
+            /*
+             * Boton Iniciar sesion: Se comprueba que todos los datos que esten en orden y se envia la petición de iniciar sesión al servidor
+             * Mensaje: 1/NombreUsuario/Contraseña
+             */
             if (nombre1Text.Text == string.Empty || Contra1Text.Text == string.Empty)
             {
                 if (nombre1Text.Text == string.Empty)
@@ -179,6 +201,9 @@ namespace cliente
 
         private void btn_Registrarse_Click(object sender, EventArgs e)
         {
+            /*
+             * Se habilitan los objetas necesarios para registrar una nueva cuenta
+             */
             //Aparecen los datos para registrarse
 
             label3.Visible = true;
@@ -204,6 +229,9 @@ namespace cliente
 
         private void btn_Registrarse2_Click(object sender, EventArgs e)
         {
+            /* Boton Registrarse2: Comprueba que los datos esten en orden y envia al servidor una petición de crear un nuevo  ususario
+             * Mensaje: 2/NombreUsuario/Cotraseña
+             */
             if (Nombre2Text.Text == string.Empty || Contra2Text.Text == string.Empty || Contra3Text.Text == string.Empty)
             {
                 if (Nombre2Text.Text == string.Empty)
@@ -250,6 +278,9 @@ namespace cliente
 
         private void btn_Enviar_Click(object sender, EventArgs e)
         {
+            /* Boton Enviar:  Envia al servidor la consulta que el usuario haya decidido hacer
+             * Mensaje : 3/Palabraclave  // 4/PalabraClave // 5/IdPartida
+             */
             if (textBox1.Text != string.Empty)
             {
                 try
@@ -293,6 +324,8 @@ namespace cliente
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
+            /* deshabilita el boton envar en el caso de estar vacio el text box correspondiente
+             */
             if (Text != string.Empty)
                 btn_Enviar.Enabled = true;
             else
@@ -302,13 +335,14 @@ namespace cliente
         private void Form1_Load(object sender, EventArgs e)
         {
             Grid.ColumnCount = 1;
-            
-
+            Grid.RowHeadersVisible = false;
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            /* Al cerrar el Form, se inicia el proceso de desconexión al servidor
+             * Mensaje: 0/
+             */
             string Mensaje = "0/";
 
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
@@ -335,6 +369,11 @@ namespace cliente
         }
         private void AtenderServidor()
         {
+            /* 
+             * Función atender servidor
+             * Esta función es la que se encargará de recibir los mensajes que el servidor envie al cliente.
+             * Deberá interpretar y dstribuir los mensajes al subproceso al que esten dirigidos.
+             */
             while (true)
             {
                 try
@@ -348,6 +387,7 @@ namespace cliente
                     switch (codigo)
                     {
                         case 1:
+                            // Llega la respuesta a lapetición de iniciar sesión
                             if (trozos[1] == "OK")
                             {
                                 
@@ -361,11 +401,12 @@ namespace cliente
                             }
                             break;
                         case 2:
+                            //Llega la respuesta a la peticion de registrar unnuevo usuario
                             if (trozos[1] == "OK")
                             {
                                 
-                                DelegadoParaEscribir delegado1 = new DelegadoParaEscribir(DesaparecerRegistarse);
-                                this.Invoke(delegado1);
+                                DelegadoParaEscribir delegado = new DelegadoParaEscribir(DesaparecerRegistarse);
+                                this.Invoke(delegado);
                             }
                             else
                             {
@@ -374,12 +415,14 @@ namespace cliente
                             }
                             break;
                         case 3:
+                            //Llega la respuesta a la consulta sobre el porcentaje de victorias
                             if (trozos[1] == "E")
                                 MessageBox.Show("Error en la búsqueda");
                             else
                                 MessageBox.Show("El porcentaje de victorias de " + textBox1.Text + " es: " + trozos[1]);
                             break;
                         case 4:
+                            //Llega la respuesta a la consulta sobre el avatar favorito
                             if (trozos[1] == "E")
                                 MessageBox.Show("Error en la búsqueda");
                             else if (trozos[1] == "X")
@@ -388,6 +431,7 @@ namespace cliente
                                 MessageBox.Show("El personaje favorito de " + textBox1.Text + " es: " + trozos[1]);
                             break;
                         case 5:
+                            //Llega la respuesta a la consulta sobre el ganador de la partida
                             if (trozos[1] == "E")
                                 MessageBox.Show("Error en la búsqueda");
                             else if (trozos[1] == "X")
@@ -477,7 +521,7 @@ namespace cliente
 
                             break;
                         case 12:
-                            //Llegan tus cartas
+                            //Llegan tus cartas.
                             ID = Convert.ToInt32(trozos[1]);
                             i = EncontrarForm(ID);
                             if (i != -1)
@@ -487,6 +531,7 @@ namespace cliente
 
                             break;
                         case 13:
+                            //Llegan las cartas que sobran.
                             ID = Convert.ToInt32(trozos[1]);
                             i = EncontrarForm(ID);
                             if (i != -1)
@@ -495,6 +540,7 @@ namespace cliente
                             }
                             break;
                         case 14:
+                            //Llega un movimimiento
                             ID = Convert.ToInt32(trozos[1]);
                             i = EncontrarForm(ID);
                             if (i != -1)
@@ -503,6 +549,7 @@ namespace cliente
                             }
                             break;
                         case 15:
+                            //Llega un movimiento + un acusasción
                             ID = Convert.ToInt32(trozos[1]);
                             i = EncontrarForm(ID);
                             if (i != -1)
@@ -512,6 +559,7 @@ namespace cliente
                             }
                             break;
                         case 16:
+                            //Llega la respuesta a la acusación a los que no son el acusador
                             ID = Convert.ToInt32(trozos[1]);
                             i = EncontrarForm(ID);
                             if (i != -1)
@@ -537,6 +585,7 @@ namespace cliente
                             }
                             break;
                         case 17:
+                            //Llega la respuesta de la acusación a quien hizo la acusación
                             ID = Convert.ToInt32(trozos[1]);
                             i = EncontrarForm(ID);
                             if (i != -1)
@@ -568,6 +617,7 @@ namespace cliente
                             }
                             break;
                         case 18:
+                            // Llega la notificación de que alguien ha salido de la partida
                             ID = Convert.ToInt32(trozos[1]);
                             i = EncontrarForm(ID);
                             if (i != -1)
@@ -576,6 +626,7 @@ namespace cliente
                             }
                             break;
                         case 19:
+                            // Llega la notificacion de que alguien  ha ganado
                             ID = Convert.ToInt32(trozos[1]);
                             i = EncontrarForm(ID);
                             if (i != -1)
@@ -583,7 +634,10 @@ namespace cliente
                                 formularios[i].LlegaGanador(trozos);
                             }
                             break;
-
+                        case 20:
+                            DelegadoParaEscribir delegado1 = new DelegadoParaEscribir(DesaparecerConsultas);
+                            this.Invoke(delegado1);
+                            break;
 
 
                     }
@@ -603,6 +657,8 @@ namespace cliente
 
         private void Grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            /* Al hacer doble clic en la lista de conectados, se añade/ se elimina, el usuario a la lista de invitados
+             */
             try
             {
 
@@ -641,6 +697,10 @@ namespace cliente
         }
         private void EliminarInvitado(string nombre)
         {
+            /*
+             * Función que se encarga de eliminar a un usuario de la lista de invitados.
+             * Parámetros: nombre (nombre del usuario a eliminar de la lista
+             */
             int i = 0;
             while (i < invitados)
             {
@@ -661,6 +721,10 @@ namespace cliente
 
         private void btn_Invitar_Click(object sender, EventArgs e)
         {
+            /*
+             * Botón Invitar : Envia  al servidor los jugadores que han sido invitados
+             * Mensaje 6/Jugadoresinvitado/...
+             */
             if (invitados < 2)
                 MessageBox.Show("Se necesitan mínimo tres participantes");
             else
@@ -681,6 +745,8 @@ namespace cliente
         }
         private void VaciarInvitados()
         {
+            /* Función para vaciar por completo la lista de invitados
+             */
             for(int i = 0; i < invitados; i++)
             {
                 Invitados[i] = null;
@@ -696,6 +762,9 @@ namespace cliente
         }
         private void DesaparecerIniciarSesion()
         {
+            /*
+             * funión para asignarsela a un delegado y hacer que desaparezcan los objetod de iniciar sesión y aparezcan los de hacer conultas
+             */
             sesion = nombre1Text.Text;
             //Desaparecen los datos de iniciar sesión
             label1.Visible = false;
@@ -717,12 +786,16 @@ namespace cliente
             btn_Invitar.Visible = true;
             label7.Visible = true;
             button1.Visible = true;
+            button2.Visible = true;
 
 
 
         }
         private void DesaparecerRegistarse()
         {
+            /* Función DesaparecerRegistrarse, para ser usado por un delegado
+             * Esta función hará que desaparezcan los objetos para registrare y aparezcan los de haer consultas
+             */
             sesion = Nombre2Text.Text;
             //Desaparece el registrarse
             label3.Visible = false;
@@ -747,9 +820,71 @@ namespace cliente
             btn_Invitar.Visible = true;
             label7.Visible = true;
             button1.Visible = true;
+            button2.Visible = true;
+        }
+        public void DesaparecerConsultas()
+        {
+            /* Funcion DesaparecerConsultas para ser usado por un delegado
+             * Hara  las funciones de desconectarse.
+             */
+             string Mensaje = "0/";
+
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+            server.Send(msg);
+            server.Shutdown(SocketShutdown.Both);
+            server.Close();
+            Atender.Abort();
+            btn_Conectar.Enabled = true;
+            //Desaparecen los datos de iniciar sesión
+            label1.Visible = false;
+            label2.Visible = false;
+            nombre1Text.Visible = false;
+            Contra1Text.Visible = false;
+            btn_Iniciar_Sesion.Visible = false;
+            btn_Registrarse.Visible = false;
+            btn_Desconectar.Enabled = false;
+            nombre1Text.Text = string.Empty;
+            Contra1Text.Text = string.Empty;
+
+            //desaparecen los datos de hacer consultas
+            label6.Visible = false;
+            porcentaje.Visible = false;
+            Favorito.Visible = false;
+            ganador.Visible = false;
+            btn_Enviar.Visible = false;
+            textBox1.Visible = false;
+            textBox1.Text = string.Empty;
+            btn_Enviar.Enabled = false;
+            Grid.Visible = false;
+            btn_Invitar.Visible = false;
+            label7.Visible = false;
+            button1.Visible = false;
+            button2.Visible = false;
+
+
+
+
+            //Desaparece el registrarse
+            label3.Visible = false;
+            label4.Visible = false;
+            label5.Visible = false;
+            Nombre2Text.Visible = false;
+            Contra2Text.Visible = false;
+            Contra3Text.Visible = false;
+            btn_Registrarse2.Visible = false;
+            Nombre2Text.Text = string.Empty;
+            Contra2Text.Text = string.Empty;
+            Contra3Text.Text = string.Empty;
+
+            VaciarInvitados();
         }
         private void PonerLista(string[] trozos)
         {
+            /* 
+             * Función PonerFilas
+             * función que se usa para llenar las filas del dataGridView cuando llega una actualización de la lista de conectados
+             * Parámetros: string[] trozos conteniendo los nombres de los usuarios conectados
+             */
             int nfilas = Convert.ToInt32(trozos[1]);
 
             Grid.Rows.Clear();
@@ -763,6 +898,11 @@ namespace cliente
        
         private void IniciarPartida(string[] trozos,string sesion)
         {
+            /* función Iniciarpartida:
+             * Función que se ejecuta cuadno llega el mensaje de iniciar una partida
+             * Parámetros: string [] trozos conteniendo los nombre que participarán en la partida
+             *             string sesion: indica el nombre del jugador conecto a dicho cliente
+             */
             int Id = Convert.ToInt32(trozos[Convert.ToInt32(trozos[1]) + 2]);
             Partida f = new Partida(server,trozos,sesion);
             formularios.Add(f);
@@ -771,6 +911,11 @@ namespace cliente
         }
         public int EncontrarForm(int ID)
         {
+            /* Función EncontrarForm:
+             * Se usa para encontrar el Form al cual se deben redirigir los mensajes que llegan
+             * parámetro: int ID, inicando el identificador de partida del form a buscar
+             * return : la posición en la listade formularios del Form buscado.
+             */
             int i = 0;
             Boolean encontrado = false;
             while (i < IDs.Count && !encontrado)
@@ -792,6 +937,11 @@ namespace cliente
         }
         public string Encriptar(string texto)
         {
+            /*Función encriptar:
+             * Usado para encriptar contraseñas.
+             * Parámetro: string texto :contraseña sin encriptar
+             * Return: contraseña ecriptada
+             */
             //arreglo de bytes donde guardaremos la llave
             byte[] keyArray;
             //arreglo de bytes donde guardaremos el texto
@@ -836,15 +986,29 @@ namespace cliente
             0, ArrayResultado.Length);
         }
 
-        private void axWindowsMediaPlayer1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
+            /* Boton 1 :
+             * Nos llevará al tutorial de partida
+             */
             video Form = new video();
             Form.ShowDialog();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            /* Boton 2 : 
+             * Boton para darse de baja en la base de datos
+             * Mensaje: 16/nombre
+             */
+            DialogResult dialogResult = MessageBox.Show(" Tu cuenta se eliminará de la base de datos y perderas el acceso, ¿Quieres continuar?", "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+            if (dialogResult == DialogResult.Yes)
+            {
+                string Mensaje = "16/"+sesion;
+
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(Mensaje);
+                server.Send(msg);
+            }
         }
     }
 }

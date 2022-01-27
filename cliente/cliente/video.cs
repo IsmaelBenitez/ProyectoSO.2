@@ -12,6 +12,8 @@ namespace cliente
 {
     public partial class video : Form
     {
+        // Este es el form donde esta el video tutorial.
+        //Se muestra mediante un reproductor windowmedia player
         public video()
         {
             InitializeComponent();

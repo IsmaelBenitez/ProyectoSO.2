@@ -22,13 +22,13 @@ namespace cliente
         int nMensajes = 0;
         int dado = 0;
         int tiempo = 0;
-
+        //Delegados que haran falta
         delegate void DelegadoParaEscribirMensaje(string mensaje);
         delegate void DelegadoparaJugador(Jugador Jug);
         delegate void DelegadoParaCartas(Carta carta);
         delegate void Delegado(string[] trozos);
 
-
+        //Listas y colas
         Queue<string> cola = new Queue<string>();
         List<Jugador> Jugadores = new List<Jugador>();
         List<Carta> Ganadoras = new List<Carta>();
@@ -41,6 +41,12 @@ namespace cliente
         Boolean escogido = false;
         public Partida(Socket server, string[] trozos, string sesion)
         {
+            /* Constructor de partida:  Debe conectarse automaticamente al servidor
+             * Debe saber cual es el nombre de usuario
+             * Parámtros : Socket server: Socket para la conexioón con el servidor
+             *             string trozos[]:  Vector con el nombre de todos los jugadores para crear la cola y la lista ed jugadores
+             *             string sesion: String con el nombre del jugador usuario
+             */
             InitializeComponent();
 
             this.server = server;
@@ -56,6 +62,10 @@ namespace cliente
         }
         private void btn_chat_Click(object sender, EventArgs e)
         {
+            /* Booton del chat
+             * Este boton envia u mensaje conteniendo el mensaje enviado por el chat para los demas jugadores
+             * Mensaaje: 8/IDPartida/Usuario/texto
+             */
             if (MensajeBox.Text != string.Empty)
             {
                 string Mensaje = "8/" + IDp + "/" + sesion + "/" + MensajeBox.Text;
@@ -66,11 +76,18 @@ namespace cliente
         }
         public void RecibirMensaje(string mensaje)
         {
+            /* Función de delegado para recibir mensajes qu otros jugadores han enviado al chat
+             * Parámetros: string mensaje:  Mensaje que se recibe
+             */
             DelegadoParaEscribirMensaje delegado = new DelegadoParaEscribirMensaje(EscribeMensaje);
             Invoke(delegado, new object[] { mensaje });
         }
         public void RecibirAvatar(string nombre, string avatar)
         {
+            /* Función de delegado: Cuando llega un nuevo avatar se crea el objeto jugador correspondiente al usuario en cuestión.
+             * Parametros: string nombre: Nombre del usuario que ha elegido.
+             *                     string avatar: Avatar que ha seleccionado dicho usuario.
+             */
             Jugador Jug = new Jugador(nombre, avatar);
             DelegadoparaJugador delegado = new DelegadoparaJugador(PonJugador);
             Invoke(delegado, new object[] { Jug });
@@ -79,6 +96,10 @@ namespace cliente
         }
         private void EscribeMensaje(string mensaje)
         {
+            /* Función escribe mensaje: Escribe los mensajes que se reciben en el chat box.
+             * En el caso de estar lleno, elimina el mensaje mas antiguo para poner el mas nuevo.
+             * Parametros: string mensaje: Mensaje que se debe escribir en el chat box.
+             */
             if (nMensajes < 6)
             {
                 chatmensajes[nMensajes] = mensaje;
@@ -108,6 +129,10 @@ namespace cliente
         }
         private void PonJugador(Jugador Jug)
         {
+            /* Función que añade a los jugadores a la lista de jugadores y a la cola
+             * Coloca las ficha corresponiente en la casilla inicial
+             * Parametro  Jugador Jug: Jugadore en cuestion del que s han recibido los datos
+             */
             Jugadores.Add(Jug);
             cola.Enqueue(turno);
             turno = cola.Dequeue();
@@ -173,6 +198,9 @@ namespace cliente
         }
         private void MensajeBox_KeyPress(object sender, KeyPressEventArgs e)
         {
+            /* Funcion que se desata al clicar enter: Envia un mensaje al chat.
+             * Mensje = 8/IDPArtida/Usuario/texto
+             */
             if ((int)e.KeyChar == (int)Keys.Enter)
             {
                 if (MensajeBox.Text != string.Empty)
@@ -186,6 +214,10 @@ namespace cliente
         }
         private void Partida_Load(object sender, EventArgs e)
         {
+            /* Load de la Partida.
+             * Se inicia el contador de tiempo 
+             * Se crea el tablero  y se crean los eventos relacionados con las casillas
+             */
             timer1.Interval = 60000;
             timer1.Start();
 
@@ -516,6 +548,12 @@ namespace cliente
         }
         private void btn_click(object sender, EventArgs e)
         {
+            /*Boton de casilla: Cuadno se clica una casilla, se calcula si el movimineto es posible o no 
+             * En caso de que sea posible envia un mensaje al servidor indicando cual es el movimiento.
+             * Se comprueba que sea tu turno, que el valor del dado sea el necesario.
+             * En el caso de salir de una habitación se debe salir obligatoriamente por la puerta.
+             * Mensaje: 10/IDPartida/usuario/PosicionXNueva/PosicionYNueva
+             */
             if (sesion == turno)
             {
                 Button cb = (sender as Button);
@@ -571,6 +609,11 @@ namespace cliente
         }
         private Boolean Distancia(Point Casilla, Point Localizacion, int dado)
         {
+            /* Funcion Distáncia: Comprueba que la casilla cliada este al alcance de movimiento segun el dado
+             * Paraámetros: Point Casilla: Casilla a la que se desea moverse
+             *              Point localizacion: Localización de la casilla en la que se encuentra antes del movimiento.
+             *              int dado: Numero que ha salido del dado.
+             */
 
             float distY = Math.Abs(Casilla.Y - Localizacion.Y);
             float distX = Math.Abs(Casilla.X - Localizacion.X);
@@ -588,7 +631,12 @@ namespace cliente
         }
         private Boolean DistanciaRoom(Point Casilla, Point Localizacion, int dado)
         {
-
+            /* función DistanciaRoom : Función parecida a ala de distáncia salo que ahora la casilla objetivo es una sala.
+             * A las salas se debe entrar por la puerta
+             * Paraámetros: Point Casilla: Casilla a la que se desea moverse
+             *              Point localizacion: Localización de la casilla en la que se encuentra antes del movimiento.
+             *              int dado: Numero que ha salido del dado.
+             */
             int distY = Math.Abs(Casilla.Y - Localizacion.Y);
             int distX = Math.Abs(Casilla.X - Localizacion.X);
 
@@ -603,6 +651,13 @@ namespace cliente
                 return false;
             }
         }
+
+        /* Funciones roomX_Click
+         * Esta coleccion de funciones son las que se desatan al clicar cada una de las diferentes salas 
+         * Cada una calcula si al usuario le es posible entrar a dicha sala.
+         * En caso de poder, se enviará al servidor el moviemiento junto con la acusaión que se hace al entrar en la sala
+         * Mensaje:"11/IDp/sesion/Nuevo.X/Nuevo.Y/asesino/arma/lugar;
+         */
         private void room1_Click(object sender, EventArgs e)
         {
 
@@ -1216,6 +1271,11 @@ namespace cliente
                 }
             }
         }
+        /*Funciones x_button_Click:
+         * Se desata al elegir al avatar
+         * Notifican al servidor de la eleccion
+         * Mensaje: 9/aza/IDp/sesion
+         */
         private void aza_button_Click(object sender, EventArgs e)
         {
             if (turno == sesion)
@@ -1284,6 +1344,9 @@ namespace cliente
         }
         public void CartasGanadoras(string[] cartas)
         {
+            /* Funcion delegado para recibir la combinacion de cartas ganadoras
+             * Parametros: string[] cartas: identificadores de las cartas ganadoras
+             */
             int i = 2;
             while (i <= 4)
             {
@@ -1299,6 +1362,9 @@ namespace cliente
         }
         public void CartasPersonales(string[] cartas)
         {
+            /* Función delegado para recibir tus cartas
+             * Parametros string[] cartas: identificadores de tus cartas
+             */
             int i = 0;
             while (i < Convert.ToInt32(cartas[2]))
             {
@@ -1314,6 +1380,9 @@ namespace cliente
         }
         public void CartasSobrantes(string[] cartas)
         {
+            /*función delegado para recibir las cartas que han sobrado
+             * Parametros string[] cartas: identificadores de las cartas que han llegado
+             */
             int i = 0;
             while (i < Convert.ToInt32(cartas[2]))
             {
@@ -1330,7 +1399,10 @@ namespace cliente
         }
         private void MuestraCarta(Carta carta)
         {
-
+            /* Funcion para mostrar en la pantalla una carta.
+             * Se desata cuando llegan las cartas sobreantes o alguien se marcha de la partida
+             * Parametros Carta carta: Carta a mostrar
+             */
             PictureBox pic = carta.DamePic();
             pic.Width = 300;
             pic.Height = 500;
@@ -1344,6 +1416,9 @@ namespace cliente
         }
         public void wait(int milliseconds)
         {
+            /* Funcion wait, literalmente para esperar.
+             * Parametros int milliseconds: tiempo en milisegundos a esperar
+             */
             System.Windows.Forms.Timer timer1 = new System.Windows.Forms.Timer();
             if (milliseconds == 0 || milliseconds < 0) return;
             //Console.WriteLine("start wait timer");
@@ -1363,6 +1438,9 @@ namespace cliente
         }
         private void MuestraMisCartas(Carta carta)
         {
+            /* funcion que añade tus cartas a la pantalla permanentemente.
+             * No Parametros realmente,  se usa para ahorrarnos u delegado el Carta carta
+             */
             int i = 0;
             foreach (Carta p in MisCartas)
             {
@@ -1393,6 +1471,8 @@ namespace cliente
         }
         private void AñadeCheckBoxes(Carta Carta)
         {
+            /* Funcion que añade los checkboxes a la derecha de la pantalla
+             */
             Label Asesinos = new Label();
             Asesinos.Location = new Point(1185, 40);
             Asesinos.Text = "Asesinos";
@@ -1482,6 +1562,9 @@ namespace cliente
         }
         private void Dado_btn_Click(object sender, EventArgs e)
         {
+            /* Boton dado: escoge un valor aleatorio entre 1 y 6.
+             * Activa la animación del dado
+             */
             if (sesion == turno)
             {
 
@@ -1520,9 +1603,17 @@ namespace cliente
                 }
                 Dado_btn.Enabled = false;
             }
+            else
+            {
+                MessageBox.Show("Solo puedes tirar el dado cuando sea tu turno");
+            }
         }
         private int DameJugador(string nombre)
         {
+            /*Funcion que devuelve la posicion en la lista de un cierto jugador
+             * Paramteros string nombre: nombre a buscar
+             * REturn int posicion en el vector de el jugador
+             */
             int i = 0;
             Boolean Encontrado = false;
             while (i < Jugadores.Count && !Encontrado)
@@ -1541,12 +1632,18 @@ namespace cliente
         }
         public void DameMovimiento(string[] trozos)
         {
-
+            /*Funcion delegado para cuando llega un movimiento
+             * Parametros string[] trozos con la informacion del  movimeinto
+             */
             Delegado delegado = new Delegado(MoverFicha);
             Invoke(delegado, new object[] { trozos });
         }
         public void MoverFicha(string[] trozos)
         {
+            /* Funcion mover ficha:
+             * Se encarga de mover la ficha en el tablero,  y de pasar el turno al siguiente
+             * Parametro: string[] trozos con la info del movimiento
+             */
             Point Nuevo = new Point(Convert.ToInt32(trozos[3]), Convert.ToInt32(trozos[4]));
             int i = DameJugador(trozos[2]);
             Jugadores[i].RefreshLocation(Nuevo);
@@ -1570,6 +1667,11 @@ namespace cliente
         }
         private Boolean CasillaLibre(Point Punto)
         {
+            /* comprubeba qu la casilla en cuestion no este ocupada.
+             * Parametros Poin Punto: Casilla que se evalua
+             * Devuelve true si esta libre, false en elc aso contrario
+             */
+
             Boolean Libre = true;
             int i = 0;
             while (i < Jugadores.Count && Libre)
@@ -1583,11 +1685,18 @@ namespace cliente
         }
         public void DameAcusacion(string[] trozos)
         {
+            /* Funcion delegado para cuando llega una acusacion
+             */
             Delegado delegado = new Delegado(Acusar);
             Invoke(delegado, new object[] { trozos });
         }
         public void Acusar(string[] trozos)
         {
+            /*Funcion que gestiona la acusacion recibida, escribe en el chat cual es la acusacion y abre el formulario para responder a la misma
+             * Parametro string [] trozos:  Con la informacion de la acusacio
+             * Mensaje:"12/" + IDp + "/" + sesion -> en el caso de que no haya cartas para responder a la acusacion
+             * Mensaje :13/" + IDp + "/" + sesion + "/" + numeroCarta En el caso de que se enseñe una carta
+             */
             string nombre = trozos[2];
             Carta asesino = new Carta(Convert.ToInt32(trozos[5]));
             Carta arma = new Carta(Convert.ToInt32(trozos[6]));
@@ -1616,6 +1725,10 @@ namespace cliente
         }
         private Boolean HayCartas(Carta asesino, Carta arma, Carta lugar)
         {
+            /* Comprueba si hay cartas a ensañar
+             * Parametros Cartas que han sido acusadas.
+             * Devuelve true si hay , false en caso contrario
+             */
             int i = 0;
             Boolean encontrado = false;
             while (i < MisCartas.Count && !encontrado)
@@ -1629,6 +1742,9 @@ namespace cliente
         }
         private List<Carta> DameLista(Carta asesino, Carta arma, Carta lugar)
         {
+            /* Devuelve una lista con las cartas acusadas que el usuaro podria enseñar
+             * Parametors: cartas acusadas
+             */
             List<Carta> cartas1 = new List<Carta>();
             int i = 0;
             while (i < MisCartas.Count)
@@ -1644,6 +1760,8 @@ namespace cliente
         }
         public void acabaAcusacion(string letra)
         {
+            /* Funcion delegado  para indicar que la acusacion se ha resuleto
+             */
             DelegadoParaEscribirMensaje delegado = new DelegadoParaEscribirMensaje(AcabaAcuascion);
             Invoke(delegado, new object[] { letra });
         }
@@ -1653,6 +1771,9 @@ namespace cliente
         }
         public void Partida_FormClosing(object sender, FormClosingEventArgs e)
         {
+            /* cuando se cierra la partida se notifica que el usuario se ha marchado
+             * Mensaje: "14/" + IDp + "/" + sesion"
+             */
             if (!escogido)
                 e.Cancel = true;
             else
@@ -1680,6 +1801,9 @@ namespace cliente
         }
         public void MuestraAcusacion(string[] trozos)
         {
+            /* Funcion que te enseña la carta que han respuesto a la acusacion
+             * Parametros string[] trozos.  Con la informacion sobre la respuesta a la acusacion
+             */
             int j = 1;
             while (2 * j < trozos.Count())
             {
@@ -1715,6 +1839,10 @@ namespace cliente
         }
         private void Sol_btn_Click(object sender, EventArgs e)
         {
+            /*Al clicar en el boton de solucion, se advierte primero
+             * Despues se habre el form de soulcionar
+             * Finalmente, se comprueba si la solucion es correcta o no.
+             */
             if (turno == sesion)
             {
                 DialogResult dialogResult = MessageBox.Show("Advertencia: Seguro que quieres solucionar? No habrá vuelta atrás", "Aviso", MessageBoxButtons.YesNo);
@@ -1723,14 +1851,15 @@ namespace cliente
                     Solucionar Form = new Solucionar();
                     Form.ShowDialog();
                     int[] solucion = Form.DarDatos();
-                    if(solucion[0]==Ganadoras[0].GetNum() && solucion[1]== Ganadoras[1].GetNum() && solucion[2] == Ganadoras[2].GetNum())
+                    if (solucion[0] == Ganadoras[0].GetNum() && solucion[1] == Ganadoras[1].GetNum() && solucion[2] == Ganadoras[2].GetNum())
                     {
                         timer1.Stop();
                         //Tu ganas
-                        string mensaje = "15/" + IDp + "/" + sesion+"/"+tiempo;
+                        string mensaje = "15/" + IDp + "/" + sesion + "/" + tiempo;
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                         server.Send(msg);
-                        MessageBox.Show("Enhorabuena, tu combinación es correcta!");
+                        Fin Form1 = new Fin(Ganadoras, sesion, true);
+                        Form1.ShowDialog();
                         Close();
                     }
                     else
@@ -1744,6 +1873,8 @@ namespace cliente
 
                 }
             }
+            else
+                MessageBox.Show("Solo puedes solucionar cuando sea tu turno");
   
         }
         public void SalirPartida(string[] trozos)
@@ -1753,6 +1884,9 @@ namespace cliente
         }
         public void SacarDePartida(string[] trozos)
         {
+            /* Cuando llega una notificacion de que alguine se ha marchado se ejcuta esta función .
+             * Lo saca de la lista,  y si no queda nadie mas, el ganador es el únicoque queda
+             */
             string nombre = trozos[2];
             if (nombre == turno)
             {
@@ -1812,7 +1946,10 @@ namespace cliente
         }
         public void LlegaGanador(string[] trozos)
         {
-            MessageBox.Show(trozos[2] + " ha acertado la combinación ganadora:\nAsesin@: " + Ganadoras[0].GetNombre() + "\nArma:  " + Ganadoras[1].GetNombre() + " \nLugar: " + Ganadoras[2].GetNombre());
+            /*Cuadno llega el ganador, se avisa y se cierra la partida
+             */
+            Fin Form = new Fin(Ganadoras, trozos[2], false);
+            Form.ShowDialog();
             DelegadoParaEscribirMensaje delegado = new DelegadoParaEscribirMensaje(Cerrar);
             Invoke(delegado, new object[] { "a" });
         }
