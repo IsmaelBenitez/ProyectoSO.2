@@ -65,3 +65,15 @@ Protección Cross-Threading y Múltiples Formularios
 
 URL: https://drive.google.com/file/d/1F1dcUuGxHGejFQDliuGSCjPiN_vkKh0w/view?usp=sharing  
 
+Versión 6   
+  
+Versión final del proyecto    
+
+· Generada por Itziar Mensa  
+
+· Verificada por Guillem Purtí  
+
+· Comunicada por Ismael Benítez   
+
+URL:
+
